@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Lemon</string>
+
+    <!-- Setup -->
+    <string name="setup_title">Welcome to Lemon</string>
+    <string name="setup_subtitle">Your offline citrus vault. Create a PIN to begin.</string>
+    <string name="setup_create_pin">Create your PIN</string>
+    <string name="setup_confirm_pin">Confirm your PIN</string>
+    <string name="setup_secret_title">Set a Secret PIN (optional)</string>
+    <string name="setup_secret_subtitle">A second PIN that opens a realistic decoy vault.</string>
+    <string name="setup_skip">Skip</string>
+    <string name="setup_continue">Continue</string>
+    <string name="setup_finish">Finish setup</string>
+    <string name="pin_mismatch">PINs do not match. Try again.</string>
+    <string name="pin_too_short">PIN must be at least 4 digits.</string>
+
+    <!-- Pin screen -->
+    <string name="pin_enter">Enter PIN</string>
+    <string name="pin_unlock">Unlock Lemon</string>
+    <string name="pin_wrong">Wrong PIN</string>
+    <string name="pin_dot">•</string>
+
+    <!-- Main -->
+    <string name="tab_passwords">Passwords</string>
+    <string name="tab_generator">Generator</string>
+    <string name="tab_totp">TOTP</string>
+    <string name="search_hint">Search passwords</string>
+    <string name="empty_passwords">No passwords yet.\nTap + to add one.</string>
+    <string name="empty_totp">No TOTP codes yet.\nTap + to scan a QR code.</string>
+    <string name="add_password">Add password</string>
+    <string name="lock_now">Lock now</string>
+    <string name="settings">Settings</string>
+    <string name="about">About</string>
+
+    <!-- Add / edit entry -->
+    <string name="title_hint">Title</string>
+    <string name="username_hint">Username / email</string>
+    <string name="secret_hint">Password or passphrase</string>
+    <string name="notes_hint">Notes (optional)</string>
+    <string name="type_password">Password</string>
+    <string name="type_passphrase">Passphrase</string>
+    <string name="save">Save</string>
+    <string name="saved">Saved</string>
+    <string name="title_required">Title is required</string>
+    <string name="delete">Delete</string>
+    <string name="edit">Edit</string>
+    <string name="copy">Copy</string>
+    <string name="reveal">Reveal</string>
+    <string name="hide">Hide</string>
+    <string name="copied">Copied to clipboard</string>
+    <string name="delete_confirm">Delete this entry?</string>
+    <string name="cancel">Cancel</string>
+    <string name="ok">OK</string>
+
+    <!-- Generator -->
+    <string name="gen_password">Password</string>
+    <string name="gen_passphrase">Passphrase</string>
+    <string name="gen_length">Length: %1$d</string>
+    <string name="gen_upper">ABC</string>
+    <string name="gen_lower">abc</string>
+    <string name="gen_digits">123</string>
+    <string name="gen_symbols">!@#</string>
+    <string name="gen_regenerate">Regenerate</string>
+    <string name="gen_words">Words: %1$d</string>
+    <string name="gen_capitalize">Capitalize</string>
+    <string name="gen_add_number">Add number</string>
+    <string name="gen_separator">Separator: %1$s</string>
+    <string name="gen_autosave">Auto-save to vault</string>
+    <string name="gen_save_to_vault">Save to vault</string>
+    <string name="gen_saved_toast">Saved to vault</string>
+    <string name="gen_copy">Copy</string>
+    <string name="gen_choose_at_least_one">Pick at least one character set</string>
+
+    <!-- TOTP -->
+    <string name="totp_scan">Scan QR</string>
+    <string name="totp_manual">Enter manually</string>
+    <string name="totp_label_hint">Label</string>
+    <string name="totp_issuer_hint">Issuer (optional)</string>
+    <string name="totp_secret_hint">Base32 secret</string>
+    <string name="totp_add">Add account</string>
+    <string name="totp_invalid_secret">Invalid Base32 secret</string>
+    <string name="totp_camera_permission">Camera permission is needed to scan QR codes.</string>
+    <string name="totp_scanning">Point at a QR code</string>
+    <string name="totp_invalid_qr">Not an otpauth:// QR code</string>
+    <string name="totp_added">TOTP account added</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_about_title">Lemon — Citrus Manager</string>
+    <string name="settings_about_body">Offline password, passphrase and TOTP vault.\n\n• AES-256-GCM encrypted storage\n• Random password &amp; passphrase generator\n• TOTP codes with QR scan\n• No network access, no screenshots\n• PIN lock with Pseudo and Secret decoy modes</string>
+    <string name="settings_wipe">Erase all data</string>
+    <string name="settings_wipe_confirm">This permanently erases every vault and PIN. Continue?</string>
+    <string name="settings_wipe_done">All data erased</string>
+    <string name="settings_version">Version 1.0</string>
+    <string name="back">Back</string>
+</resources>

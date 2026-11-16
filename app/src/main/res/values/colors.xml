@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="lemon_yellow">#FDD835</color>
+    <color name="lemon_deep">#F9A825</color>
+    <color name="lemon_dark">#F57F17</color>
+    <color name="lemon_light">#FFF9C4</color>
+    <color name="lemon_pale">#FFFDE7</color>
+    <color name="leaf_green">#7CB342</color>
+    <color name="leaf_dark">#558B2F</color>
+    <color name="ink">#252517</color>
+    <color name="ink_soft">#5D5D49</color>
+    <color name="surface">#FFFDF5</color>
+    <color name="white">#FFFFFF</color>
+    <color name="danger">#C62828</color>
+    <color name="scrim">#99000000</color>
+</resources>
