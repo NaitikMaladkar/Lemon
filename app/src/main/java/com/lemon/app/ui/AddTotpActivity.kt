@@ -45,13 +45,17 @@ class AddTotpActivity : SecureActivity() {
                 return@setOnClickListener
             }
             val i = issuer.text?.toString()?.trim().orEmpty()
-            if (existing != null) {
+            val saved = if (existing != null) {
                 existing.label = l
                 existing.issuer = i
                 existing.secret = s.uppercase()
                 VaultStore.updateTotp(existing)
             } else {
                 VaultStore.addTotp(TotpEntry(label = l, issuer = i, secret = s.uppercase()))
+            }
+            if (!saved) {
+                Toast.makeText(this, R.string.vault_readonly, Toast.LENGTH_LONG).show()
+                return@setOnClickListener
             }
             Toast.makeText(this, R.string.saved, Toast.LENGTH_SHORT).show()
             finish()

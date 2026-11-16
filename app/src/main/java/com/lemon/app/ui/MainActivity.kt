@@ -7,6 +7,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -21,20 +22,14 @@ import com.lemon.app.totp.Totp
 import com.lemon.app.util.SecureActivity
 
 /**
- * Home screen: live TOTP codes. Top bar: lock, password manager, settings.
+ * Home screen: live TOTP codes with the lemon countdown. Top bar: password
+ * manager (lock icon) and settings.
  */
 class MainActivity : SecureActivity() {
 
     private lateinit var list: RecyclerView
     private lateinit var empty: TextView
     private lateinit var adapter: TotpAdapter
-
-    private val ticker = object : Runnable {
-        override fun run() {
-            adapter.refresh()
-            list.postDelayed(this, 1000)
-        }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,24 +45,29 @@ class MainActivity : SecureActivity() {
         adapter = TotpAdapter(
             items = VaultStore.totps,
             onCopy = { copyCode(it) },
-            onMore = { showMore(it) }
+            onEdit = { edit(it) },
+            onDelete = { confirmDelete(it) }
         )
         list.adapter = adapter
 
         findViewById<FloatingActionButton>(R.id.fab_add_totp).setOnClickListener {
             showAddChooser()
         }
+
+        animateIn(list)
     }
 
     override fun onResume() {
         super.onResume()
-        refresh()
-        list.postDelayed(ticker, 1000)
+        if (!VaultStore.unlocked) return // SecureActivity is redirecting to the PIN screen
+        adapter.refresh()
+        updateEmpty()
+        adapter.start()
     }
 
     override fun onPause() {
         super.onPause()
-        list.removeCallbacks(ticker)
+        adapter.stop()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -89,9 +89,8 @@ class MainActivity : SecureActivity() {
         }
     }
 
-    private fun refresh() {
-        adapter.notifyDataSetChanged()
-        empty.visibility = if (VaultStore.totps.isEmpty()) TextView.VISIBLE else TextView.GONE
+    private fun updateEmpty() {
+        empty.visibility = if (VaultStore.totps.isEmpty()) View.VISIBLE else View.GONE
     }
 
     private fun showAddChooser() {
@@ -110,28 +109,22 @@ class MainActivity : SecureActivity() {
             .show()
     }
 
-    private fun showMore(entry: TotpEntry) {
-        val options = arrayOf(getString(R.string.edit), getString(R.string.delete))
-        AlertDialog.Builder(this)
-            .setTitle(entry.label)
-            .setItems(options) { _, which ->
-                when (which) {
-                    0 -> startActivity(
-                        Intent(this, AddTotpActivity::class.java)
-                            .putExtra(AddTotpActivity.EXTRA_ID, entry.id)
-                    )
-                    1 -> confirmDelete(entry)
-                }
-            }
-            .show()
+    private fun edit(entry: TotpEntry) {
+        startActivity(
+            Intent(this, AddTotpActivity::class.java)
+                .putExtra(AddTotpActivity.EXTRA_ID, entry.id)
+        )
     }
 
     private fun confirmDelete(entry: TotpEntry) {
         AlertDialog.Builder(this)
             .setTitle(R.string.delete_confirm)
+            .setMessage(entry.label)
             .setPositiveButton(R.string.delete) { _, _ ->
+                val index = VaultStore.totps.indexOfFirst { it.id == entry.id }
                 VaultStore.deleteTotp(entry.id)
-                refresh()
+                if (index >= 0) adapter.notifyItemRemoved(index)
+                updateEmpty()
             }
             .setNegativeButton(R.string.cancel, null)
             .show()
@@ -147,5 +140,6 @@ class MainActivity : SecureActivity() {
         val cm = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
         cm.setPrimaryClip(ClipData.newPlainText("totp", code))
         Toast.makeText(this, R.string.copied, Toast.LENGTH_SHORT).show()
+        list.performHapticFeedback(android.view.HapticFeedbackConstants.CONFIRM)
     }
 }

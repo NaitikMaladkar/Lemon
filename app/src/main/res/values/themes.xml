@@ -15,6 +15,7 @@
         <item name="android:windowLightStatusBar">false</item>
         <item name="materialButtonStyle">@style/Widget.Lemon.Button</item>
         <item name="materialCardViewStyle">@style/Widget.Lemon.Card</item>
+        <item name="android:windowAnimationStyle">@style/Animation.Lemon</item>
     </style>
 
     <!-- Blocks screenshots and screen recording on every screen. -->
@@ -51,5 +52,13 @@
         <item name="android:textSize">24sp</item>
         <item name="android:textColor">@color/ink</item>
         <item name="cornerRadius">20dp</item>
+    </style>
+
+    <!-- Smooth, short window transitions: opening never feels frozen. -->
+    <style name="Animation.Lemon" parent="@android:style/Animation.Activity">
+        <item name="android:activityOpenEnterAnimation">@anim/activity_open_enter</item>
+        <item name="android:activityOpenExitAnimation">@anim/activity_open_exit</item>
+        <item name="android:activityCloseEnterAnimation">@anim/activity_close_enter</item>
+        <item name="android:activityCloseExitAnimation">@anim/activity_close_exit</item>
     </style>
 </resources>

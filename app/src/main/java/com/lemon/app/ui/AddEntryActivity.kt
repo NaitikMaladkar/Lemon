@@ -117,7 +117,7 @@ class AddEntryActivity : SecureActivity() {
                 return@setOnClickListener
             }
 
-            if (existing != null) {
+            val saved = if (existing != null) {
                 existing.title = name
                 existing.username = username
                 existing.notes = notes
@@ -135,6 +135,10 @@ class AddEntryActivity : SecureActivity() {
                         type = type
                     )
                 )
+            }
+            if (!saved) {
+                Toast.makeText(this, R.string.vault_readonly, Toast.LENGTH_LONG).show()
+                return@setOnClickListener
             }
             Toast.makeText(this, R.string.saved, Toast.LENGTH_SHORT).show()
             finish()

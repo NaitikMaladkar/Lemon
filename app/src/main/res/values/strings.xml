@@ -102,4 +102,9 @@
     <string name="change_pin_done">PIN changed</string>
     <string name="change_pin_mismatch">New PINs do not match</string>
     <string name="back">Back</string>
+    <string name="setup_confirm_subtitle">Type the same 4 digits again to confirm.</string>
+    <string name="pin_could_not_open">Could not open the vault. Try again.</string>
+    <string name="vault_readonly">Vault file could not be opened - it was left untouched to protect your data.</string>
+    <string name="totp_timer_desc">Seconds remaining</string>
+    <string name="totp_camera_unavailable">Camera is not available on this device.</string>
 </resources>

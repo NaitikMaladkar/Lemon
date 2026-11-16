@@ -26,7 +26,10 @@
             android:orientation="vertical"
             android:padding="16dp">
 
-            <com.google.android.material.card.MaterialCardView style="@style/Widget.Lemon.Card">
+            <com.google.android.material.card.MaterialCardView
+                style="@style/Widget.Lemon.Card"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
