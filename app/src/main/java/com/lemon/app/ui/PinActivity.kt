@@ -2,7 +2,6 @@ package com.lemon.app.ui
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Button
 import android.widget.TextView
 import com.lemon.app.R
 import com.lemon.app.data.VaultStore
@@ -11,7 +10,7 @@ import com.lemon.app.util.SecureActivity
 
 /**
  * PIN unlock. Correct PIN opens the real vault; any wrong PIN opens the
- * pseudo decoy vault. Exactly 4 digits.
+ * pseudo decoy vault. Submits automatically once 4 digits are typed.
  */
 class PinActivity : SecureActivity() {
 
@@ -33,22 +32,15 @@ class PinActivity : SecureActivity() {
         keypad = Keypad(
             root = window.decorView,
             dotsContainer = findViewById(R.id.pin_dots),
-            maxLen = 4
+            maxLen = 4,
+            onComplete = { pin -> unlock(pin) }
         )
-        val confirm = findViewById<Button>(R.id.pin_confirm)
-        confirm.setOnClickListener { unlock() }
     }
 
-    private fun unlock() {
+    private fun unlock(pin: String) {
         if (opening) return
-        val pin = keypad.pin()
-        if (pin.length != 4) {
-            error.setText(R.string.pin_not_4)
-            error.visibility = TextView.VISIBLE
-            return
-        }
-        error.visibility = TextView.GONE
         opening = true
+        error.visibility = TextView.GONE
 
         if (VaultStore.tryUnlock(VaultStore.Profile.REAL, pin)) {
             // real vault

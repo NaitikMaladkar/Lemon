@@ -1,37 +1,38 @@
 package com.lemon.app.util
 
-import android.view.Gravity
+import android.graphics.drawable.GradientDrawable
 import android.view.View
 import android.widget.LinearLayout
-import android.widget.TextView
+import androidx.core.content.ContextCompat
 import com.lemon.app.R
 
 /**
  * Binds the shared numeric keypad (view_pin_keypad) and the PIN dots row.
+ * Dots are large filled circles; [onComplete] fires automatically as soon
+ * as [maxLen] digits have been typed (no confirm button needed).
  */
 class Keypad(
     private val root: View,
     private val dotsContainer: LinearLayout,
-    private val maxLen: Int = 4
+    private val maxLen: Int = 4,
+    private val onComplete: (String) -> Unit = {}
 ) {
     private val input = StringBuilder()
-    private val dots = ArrayList<TextView>(maxLen)
+    private val dots = ArrayList<View>(maxLen)
+    private var locked = false
 
     init {
         val density = root.resources.displayMetrics.density
-        val size = (20 * density).toInt()
-        val margin = (4 * density).toInt()
+        val size = (26 * density).toInt()
+        val margin = (8 * density).toInt()
         for (i in 0 until maxLen) {
-            val tv = TextView(root.context)
+            val dot = View(root.context)
             val lp = LinearLayout.LayoutParams(size, size)
             lp.setMargins(margin, 0, margin, 0)
-            tv.layoutParams = lp
-            tv.text = "•"
-            tv.gravity = Gravity.CENTER
-            tv.textSize = 18f
-            tv.visibility = View.INVISIBLE
-            dotsContainer.addView(tv)
-            dots.add(tv)
+            dot.layoutParams = lp
+            dot.background = dotDrawable(filled = false)
+            dotsContainer.addView(dot)
+            dots.add(dot)
         }
 
         val ids = intArrayOf(
@@ -46,14 +47,34 @@ class Keypad(
         root.findViewById<View>(R.id.key_back).setOnClickListener { delete() }
     }
 
+    private fun dotDrawable(filled: Boolean): GradientDrawable {
+        val density = root.resources.displayMetrics.density
+        return GradientDrawable().apply {
+            shape = GradientDrawable.OVAL
+            if (filled) {
+                setColor(ContextCompat.getColor(root.context, R.color.lemon_deep))
+            } else {
+                setColor(0x00000000)
+                setStroke(
+                    (2 * density).toInt(),
+                    ContextCompat.getColor(root.context, R.color.ink_soft)
+                )
+            }
+        }
+    }
+
     private fun append(c: Char) {
-        if (input.length < maxLen) {
-            input.append(c)
-            updateDots()
+        if (locked || input.length >= maxLen) return
+        input.append(c)
+        updateDots()
+        if (input.length == maxLen) {
+            locked = true
+            onComplete(pin())
         }
     }
 
     private fun delete() {
+        if (locked) return
         if (input.isNotEmpty()) {
             input.deleteCharAt(input.length - 1)
             updateDots()
@@ -62,14 +83,15 @@ class Keypad(
 
     fun clear() {
         input.setLength(0)
+        locked = false
         updateDots()
     }
 
     fun pin(): String = input.toString()
 
     private fun updateDots() {
-        dots.forEachIndexed { i, tv ->
-            tv.visibility = if (i < input.length) View.VISIBLE else View.INVISIBLE
+        dots.forEachIndexed { i, dot ->
+            dot.background = dotDrawable(filled = i < input.length)
         }
     }
 }

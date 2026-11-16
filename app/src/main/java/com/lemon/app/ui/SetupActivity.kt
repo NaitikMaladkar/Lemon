@@ -2,8 +2,6 @@ package com.lemon.app.ui
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Button
-import android.widget.LinearLayout
 import android.widget.TextView
 import com.lemon.app.R
 import com.lemon.app.data.VaultStore
@@ -11,7 +9,8 @@ import com.lemon.app.util.Keypad
 import com.lemon.app.util.SecureActivity
 
 /**
- * First-run setup: create a 4-digit PIN (and confirm it). No secret mode.
+ * First-run setup: create a 4-digit PIN (and confirm it). Submits
+ * automatically once all 4 digits are typed.
  */
 class SetupActivity : SecureActivity() {
 
@@ -24,7 +23,6 @@ class SetupActivity : SecureActivity() {
     private lateinit var title: TextView
     private lateinit var subtitle: TextView
     private lateinit var error: TextView
-    private lateinit var primary: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,23 +31,16 @@ class SetupActivity : SecureActivity() {
         title = findViewById(R.id.setup_title)
         subtitle = findViewById(R.id.setup_subtitle)
         error = findViewById(R.id.setup_error)
-        primary = findViewById(R.id.setup_primary)
 
         keypad = Keypad(
             root = window.decorView,
             dotsContainer = findViewById(R.id.setup_dots),
-            maxLen = 4
+            maxLen = 4,
+            onComplete = { pin -> onPinComplete(pin) }
         )
-
-        primary.setOnClickListener { onPrimary() }
     }
 
-    private fun onPrimary() {
-        val pin = keypad.pin()
-        if (pin.length != 4 || !pin.all { it.isDigit() }) {
-            showError(R.string.pin_not_4)
-            return
-        }
+    private fun onPinComplete(pin: String) {
         when (step) {
             Step.CREATE -> {
                 firstPin = pin
@@ -57,8 +48,6 @@ class SetupActivity : SecureActivity() {
                 showError(0)
                 step = Step.CONFIRM
                 title.setText(R.string.setup_confirm_pin)
-                subtitle.setText(R.string.setup_subtitle)
-                primary.setText(R.string.setup_finish)
             }
             Step.CONFIRM -> {
                 if (pin == firstPin) {
@@ -68,7 +57,6 @@ class SetupActivity : SecureActivity() {
                     keypad.clear()
                     step = Step.CREATE
                     title.setText(R.string.setup_create_pin)
-                    primary.setText(R.string.setup_continue)
                 }
             }
         }

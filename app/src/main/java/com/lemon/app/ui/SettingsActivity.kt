@@ -25,8 +25,10 @@ class SettingsActivity : SecureActivity() {
         setContentView(R.layout.activity_settings)
 
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
-        setSupportActionBar(toolbar)
-        toolbar.setNavigationOnClickListener { finish() }
+        if (toolbar != null) {
+            setSupportActionBar(toolbar)
+            toolbar.setNavigationOnClickListener { finish() }
+        }
 
         try {
             val version = packageManager.getPackageInfo(packageName, 0).versionName ?: "1.0"
