@@ -31,6 +31,10 @@ object VaultStore {
     var unlocked: Boolean = false
         private set
 
+    /** True when the vault file could not be decrypted - blocks writes so data is never overwritten. */
+    var readOnly: Boolean = false
+        private set
+
     val entries = ArrayList<VaultEntry>()
     val totps = ArrayList<TotpEntry>()
 
@@ -68,7 +72,12 @@ object VaultStore {
         val p = prefs ?: return false
         val saltB64 = p.getString(saltKey(profile), null) ?: return false
         val verifier = p.getString(verifierKey(profile), null) ?: return false
-        val key = CryptoManager.deriveKey(pin, CryptoManager.unb64(saltB64))
+        val salt = try {
+            CryptoManager.unb64(saltB64)
+        } catch (e: Exception) {
+            return false
+        }
+        val key = CryptoManager.deriveKey(pin, salt)
         if (!CryptoManager.checkVerifier(key, verifier)) return false
         unlockWith(profile, key)
         return true
@@ -78,7 +87,18 @@ object VaultStore {
     fun unlockPseudo(): Boolean {
         val p = prefs ?: return false
         val saltB64 = p.getString(saltKey(Profile.PSEUDO), null)
-        val salt = if (saltB64 != null) CryptoManager.unb64(saltB64) else CryptoManager.randomBytes(16)
+        val salt = if (saltB64 != null) {
+            try {
+                CryptoManager.unb64(saltB64)
+            } catch (e: Exception) {
+                CryptoManager.randomBytes(16)
+            }
+        } else {
+            // First run: create a stable salt for the decoy vault.
+            val newSalt = CryptoManager.randomBytes(16)
+            p.edit().putString(saltKey(Profile.PSEUDO), CryptoManager.b64(newSalt)).apply()
+            newSalt
+        }
         val key = CryptoManager.deriveKey(PSEUDO_PIN, salt)
         unlockWith(Profile.PSEUDO, key)
         return true
@@ -87,6 +107,7 @@ object VaultStore {
     private fun unlockWith(profile: Profile, key: ByteArray) {
         this.profile = profile
         this.masterKey = key
+        readOnly = false
         load()
         unlocked = true
     }
@@ -95,6 +116,7 @@ object VaultStore {
         masterKey?.fill(0)
         masterKey = null
         unlocked = false
+        readOnly = false
         entries.clear()
         totps.clear()
     }
@@ -139,6 +161,7 @@ object VaultStore {
 
     private fun persist() {
         val key = masterKey ?: return
+        if (readOnly) return // never overwrite a vault we failed to read
         val json = JSONObject().apply {
             put("entries", VaultJson.entriesToJson(entries))
             put("totps", VaultJson.totpsToJson(totps))
@@ -155,7 +178,11 @@ object VaultStore {
         }
         val plain = CryptoManager.decrypt(key, file.readBytes())
         if (plain == null) {
-            seedIfEmpty()
+            // Decryption failed (corrupt file / wrong key). Keep the file intact
+            // and show an empty vault instead of silently destroying the data.
+            entries.clear()
+            totps.clear()
+            readOnly = true
             return
         }
         try {
@@ -167,6 +194,7 @@ object VaultStore {
         } catch (e: Exception) {
             entries.clear()
             totps.clear()
+            readOnly = true
         }
     }
 

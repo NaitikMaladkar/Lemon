@@ -34,6 +34,7 @@ class PinActivity : SecureActivity() {
         setContentView(R.layout.activity_pin)
 
         hint = findViewById(R.id.pin_hint)
+        hint.text = getString(R.string.pin_hint_text)
         error = findViewById(R.id.pin_error)
         keypad = Keypad(findViewById(R.id.keypad), findViewById(R.id.pin_dots))
 

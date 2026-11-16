@@ -27,7 +27,7 @@ object WordList {
         "linen", "lion", "lizard", "lobster", "lotus", "lumen", "lychee",
         "mango", "maple", "marble", "marigold", "marsh", "meadow", "melon",
         "mermaid", "mica", "mint", "mirror", "mist", "mocha", "monsoon",
-        "moss", "moth", "mango", "mulberry", "mural", "mushroom", "nectar",
+        "moss", "moth", "mulberry", "mural", "mushroom", "nectar",
         "needle", "nest", "noodle", "north", "nutmeg", "oak", "oasis",
         "ocean", "octopus", "olive", "onion", "opal", "orange", "orchid",
         "otter", "palm", "panda", "pansy", "papaya", "parrot", "pastel",

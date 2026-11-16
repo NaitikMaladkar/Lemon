@@ -17,6 +17,7 @@
 
     <!-- Pin screen -->
     <string name="pin_enter">Enter PIN</string>
+    <string name="pin_hint_text">4–8 digits</string>
     <string name="pin_unlock">Unlock Lemon</string>
     <string name="pin_wrong">Wrong PIN</string>
     <string name="pin_dot">•</string>

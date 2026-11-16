@@ -25,11 +25,6 @@ class TotpAdapter(
         notifyDataSetChanged()
     }
 
-    /** Called every second by the fragment to refresh codes and progress. */
-    fun tick() {
-        notifyItemRangeChanged(0, itemCount)
-    }
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_totp, parent, false)
@@ -40,19 +35,11 @@ class TotpAdapter(
 
     override fun onBindViewHolder(holder: VH, position: Int) {
         val entry = items[position]
+        holder.entry = entry
         holder.label.text = entry.label
         holder.issuer.text = entry.issuer
         holder.issuer.visibility = if (entry.issuer.isEmpty()) View.GONE else View.VISIBLE
-
-        val code = Totp.code(
-            entry.secret,
-            period = entry.period,
-            digits = entry.digits,
-            algorithm = entry.algorithm
-        )
-        holder.code.text = Totp.pretty(code)
-        holder.progress.max = entry.period
-        holder.progress.progress = Totp.secondsRemaining(entry.period)
+        holder.refreshCode()
 
         holder.copy.setOnClickListener { onCopy(entry) }
         holder.more.setOnClickListener { v ->
@@ -70,5 +57,17 @@ class TotpAdapter(
         val progress: ProgressBar = view.findViewById(R.id.totp_progress)
         val copy: ImageButton = view.findViewById(R.id.totp_copy)
         val more: ImageButton = view.findViewById(R.id.totp_more)
+
+        var entry: TotpEntry? = null
+
+        /** Update only the code + countdown, without rebinding the whole row. */
+        fun refreshCode() {
+            val e = entry ?: return
+            code.text = Totp.pretty(
+                Totp.code(e.secret, period = e.period, digits = e.digits, algorithm = e.algorithm)
+            )
+            progress.max = e.period
+            progress.progress = Totp.secondsRemaining(e.period)
+        }
     }
 }

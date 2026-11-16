@@ -22,11 +22,20 @@ import com.lemon.app.ui.ScannerActivity
 class TotpFragment : Fragment(R.layout.fragment_totp) {
 
     private lateinit var adapter: TotpAdapter
+    private var recyclerView: RecyclerView? = null
     private val handler = Handler(Looper.getMainLooper())
     private val ticker = object : Runnable {
         override fun run() {
-            if (::adapter.isInitialized && adapter.itemCount > 0) adapter.tick()
+            tickVisibleCodes()
             handler.postDelayed(this, 1000)
+        }
+    }
+
+    /** Refresh codes in place so rows don't rebind (keeps popups/scroll stable). */
+    private fun tickVisibleCodes() {
+        val rv = recyclerView ?: return
+        for (i in 0 until rv.childCount) {
+            (rv.getChildViewHolder(rv.getChildAt(i)) as? TotpAdapter.VH)?.refreshCode()
         }
     }
 
@@ -35,6 +44,7 @@ class TotpFragment : Fragment(R.layout.fragment_totp) {
 
         val emptyView = view.findViewById<TextView>(R.id.empty_view)
         val list = view.findViewById<RecyclerView>(R.id.totp_list)
+        recyclerView = list
         list.layoutManager = LinearLayoutManager(requireContext())
 
         adapter = TotpAdapter(

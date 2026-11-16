@@ -103,8 +103,9 @@ class SetupActivity : SecureActivity() {
                     step = Step.CREATE_SECRET
                     renderStep()
                 } else {
-                    showError(getString(R.string.pin_mismatch))
                     step = Step.CREATE_REAL
+                    renderStep()
+                    showError(getString(R.string.pin_mismatch))
                 }
             }
             Step.CREATE_SECRET -> {
@@ -121,8 +122,9 @@ class SetupActivity : SecureActivity() {
                     VaultStore.createProfile(VaultStore.Profile.SECRET, secretPin)
                     finishSetup()
                 } else {
-                    showError(getString(R.string.pin_mismatch))
                     step = Step.CREATE_SECRET
+                    renderStep()
+                    showError(getString(R.string.pin_mismatch))
                 }
             }
         }

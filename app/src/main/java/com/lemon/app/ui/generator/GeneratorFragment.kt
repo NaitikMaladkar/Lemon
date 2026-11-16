@@ -80,13 +80,24 @@ class GeneratorFragment : Fragment(R.layout.fragment_generator) {
             if (!autosave.isChecked) return
             val title = saveTitle.text?.toString()?.trim().orEmpty()
             if (title.isEmpty()) return
-            VaultStore.addEntry(
-                VaultEntry(
-                    title = title,
-                    secret = secret,
-                    type = type
+            // Update the entry with the same title instead of piling up duplicates
+            // every time a new secret is generated.
+            val existing = VaultStore.entries.firstOrNull {
+                it.title.equals(title, ignoreCase = true) && it.type == type
+            }
+            if (existing != null) {
+                existing.secret = secret
+                existing.updatedAt = System.currentTimeMillis()
+                VaultStore.updateEntry(existing)
+            } else {
+                VaultStore.addEntry(
+                    VaultEntry(
+                        title = title,
+                        secret = secret,
+                        type = type
+                    )
                 )
-            )
+            }
             Toast.makeText(requireContext(), R.string.gen_saved_toast, Toast.LENGTH_SHORT).show()
         }
 

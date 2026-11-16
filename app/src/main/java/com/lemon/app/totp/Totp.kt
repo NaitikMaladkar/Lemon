@@ -113,7 +113,9 @@ object Totp {
         s
     }
 
-    /** Format code as "123 456" style pairs. */
-    fun pretty(code: String): String =
-        code.chunked(3).joinToString(" ")
+    /** Format code as "123 456" (or "1234 5678" for 8 digits). */
+    fun pretty(code: String): String {
+        val size = if (code.length == 8) 4 else 3
+        return code.chunked(size).joinToString(" ")
+    }
 }
