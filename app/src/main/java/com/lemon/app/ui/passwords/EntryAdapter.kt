@@ -50,7 +50,7 @@ class EntryAdapter(
         )
         holder.reveal.setOnClickListener {
             if (revealed.contains(entry.id)) revealed.remove(entry.id) else revealed.add(entry.id)
-            notifyItemChanged(holder.bindingAdapterPosition)
+            notifyItemChanged(holder.adapterPosition)
         }
         holder.copy.setOnClickListener { onCopySecret(entry) }
 
@@ -66,7 +66,7 @@ class EntryAdapter(
                     R.id.action_copy_username -> onCopyUsername(entry)
                     R.id.action_reveal -> {
                         if (revealed.contains(entry.id)) revealed.remove(entry.id) else revealed.add(entry.id)
-                        notifyItemChanged(holder.bindingAdapterPosition)
+                        notifyItemChanged(holder.adapterPosition)
                     }
                     R.id.action_edit -> onEdit(entry)
                     R.id.action_delete -> onDelete(entry)
