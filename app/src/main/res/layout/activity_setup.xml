@@ -74,13 +74,5 @@
             app:icon="@drawable/ic_check"
             app:iconGravity="textStart" />
 
-        <Button
-            android:id="@+id/setup_skip"
-            style="@style/Widget.Material3.Button.TextButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp"
-            android:text="@string/setup_skip"
-            android:visibility="gone" />
     </LinearLayout>
 </ScrollView>
