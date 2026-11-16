@@ -2,13 +2,13 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
+        android:id="@+id/action_password_manager"
+        android:icon="@drawable/ic_lock"
+        android:title="@string/password_manager"
+        app:showAsAction="ifRoom" />
+    <item
         android:id="@+id/action_settings"
         android:icon="@drawable/ic_settings"
         android:title="@string/settings"
         app:showAsAction="ifRoom" />
-    <item
-        android:id="@+id/action_lock"
-        android:icon="@drawable/ic_lock"
-        android:title="@string/lock_now"
-        app:showAsAction="never" />
 </menu>

@@ -42,7 +42,13 @@
             android:theme="@style/Theme.Lemon.Secure" />
 
         <activity
-            android:name=".ui.AddEditActivity"
+            android:name=".ui.PasswordManagerActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.Lemon.Secure" />
+
+        <activity
+            android:name=".ui.AddEntryActivity"
             android:exported="false"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.Lemon.Secure"

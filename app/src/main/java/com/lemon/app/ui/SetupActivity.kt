@@ -2,7 +2,6 @@ package com.lemon.app.ui
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -12,134 +11,85 @@ import com.lemon.app.util.Keypad
 import com.lemon.app.util.SecureActivity
 
 /**
- * First-run setup: create the real PIN, optionally a Secret PIN.
- * Pseudo mode needs no PIN - any wrong PIN opens it.
+ * First-run setup: create a 4-digit PIN (and confirm it). No secret mode.
  */
 class SetupActivity : SecureActivity() {
 
-    private enum class Step { CREATE_REAL, CONFIRM_REAL, CREATE_SECRET, CONFIRM_SECRET }
+    private enum class Step { CREATE, CONFIRM }
 
-    private var step = Step.CREATE_REAL
+    private var step = Step.CREATE
     private var firstPin = ""
-    private var secretPin = ""
 
     private lateinit var keypad: Keypad
-    private lateinit var titleView: TextView
-    private lateinit var subtitleView: TextView
-    private lateinit var errorView: TextView
+    private lateinit var title: TextView
+    private lateinit var subtitle: TextView
+    private lateinit var error: TextView
     private lateinit var primary: Button
-    private lateinit var skip: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_setup)
 
-        titleView = findViewById(R.id.setup_title)
-        subtitleView = findViewById(R.id.setup_subtitle)
-        errorView = findViewById(R.id.setup_error)
+        title = findViewById(R.id.setup_title)
+        subtitle = findViewById(R.id.setup_subtitle)
+        error = findViewById(R.id.setup_error)
         primary = findViewById(R.id.setup_primary)
-        skip = findViewById(R.id.setup_skip)
 
-        keypad = Keypad(findViewById(R.id.keypad), findViewById(R.id.setup_dots))
+        keypad = Keypad(
+            root = window.decorView,
+            dotsContainer = findViewById(R.id.setup_dots),
+            maxLen = 4
+        )
 
         primary.setOnClickListener { onPrimary() }
-        skip.setOnClickListener { finishSetup() }
-
-        renderStep()
-    }
-
-    private fun renderStep() {
-        errorView.visibility = View.GONE
-        keypad.clear()
-        when (step) {
-            Step.CREATE_REAL -> {
-                titleView.text = getString(R.string.setup_create_pin)
-                subtitleView.text = getString(R.string.setup_subtitle)
-                primary.text = getString(R.string.setup_continue)
-                skip.visibility = View.GONE
-            }
-            Step.CONFIRM_REAL -> {
-                titleView.text = getString(R.string.setup_confirm_pin)
-                subtitleView.text = getString(R.string.setup_subtitle)
-                primary.text = getString(R.string.setup_continue)
-                skip.visibility = View.GONE
-            }
-            Step.CREATE_SECRET -> {
-                titleView.text = getString(R.string.setup_secret_title)
-                subtitleView.text = getString(R.string.setup_secret_subtitle)
-                primary.text = getString(R.string.setup_continue)
-                skip.visibility = View.VISIBLE
-            }
-            Step.CONFIRM_SECRET -> {
-                titleView.text = getString(R.string.setup_confirm_pin)
-                subtitleView.text = getString(R.string.setup_secret_subtitle)
-                primary.text = getString(R.string.setup_finish)
-                skip.visibility = View.GONE
-            }
-        }
-    }
-
-    private fun showError(msg: String) {
-        errorView.text = msg
-        errorView.visibility = View.VISIBLE
-        keypad.clear()
     }
 
     private fun onPrimary() {
         val pin = keypad.pin()
+        if (pin.length != 4 || !pin.all { it.isDigit() }) {
+            showError(R.string.pin_not_4)
+            return
+        }
         when (step) {
-            Step.CREATE_REAL -> {
-                if (pin.length < 4) {
-                    showError(getString(R.string.pin_too_short))
-                    return
-                }
+            Step.CREATE -> {
                 firstPin = pin
-                step = Step.CONFIRM_REAL
-                renderStep()
+                keypad.clear()
+                showError(0)
+                step = Step.CONFIRM
+                title.setText(R.string.setup_confirm_pin)
+                subtitle.setText(R.string.setup_subtitle)
+                primary.setText(R.string.setup_finish)
             }
-            Step.CONFIRM_REAL -> {
+            Step.CONFIRM -> {
                 if (pin == firstPin) {
-                    VaultStore.createProfile(VaultStore.Profile.REAL, firstPin)
-                    step = Step.CREATE_SECRET
-                    renderStep()
+                    finishSetup(pin)
                 } else {
-                    step = Step.CREATE_REAL
-                    renderStep()
-                    showError(getString(R.string.pin_mismatch))
-                }
-            }
-            Step.CREATE_SECRET -> {
-                if (pin.length < 4) {
-                    showError(getString(R.string.pin_too_short))
-                    return
-                }
-                secretPin = pin
-                step = Step.CONFIRM_SECRET
-                renderStep()
-            }
-            Step.CONFIRM_SECRET -> {
-                if (pin == secretPin) {
-                    VaultStore.createProfile(VaultStore.Profile.SECRET, secretPin)
-                    finishSetup()
-                } else {
-                    step = Step.CREATE_SECRET
-                    renderStep()
-                    showError(getString(R.string.pin_mismatch))
+                    showError(R.string.pin_mismatch)
+                    keypad.clear()
+                    step = Step.CREATE
+                    title.setText(R.string.setup_create_pin)
+                    primary.setText(R.string.setup_continue)
                 }
             }
         }
     }
 
-    private fun finishSetup() {
-        // Pseudo profile only needs its salt; its "PIN" is a fixed internal value
-        // and it is opened by ANY wrong PIN.
-        VaultStore.createProfile(VaultStore.Profile.PSEUDO, "pseudo-decoy")
+    private fun finishSetup(pin: String) {
+        VaultStore.createProfile(VaultStore.Profile.REAL, pin)
         VaultStore.markSetupDone()
-        VaultStore.tryUnlock(VaultStore.Profile.REAL, firstPin)
-
-        val intent = Intent(this, MainActivity::class.java)
-        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        startActivity(intent)
+        VaultStore.tryUnlock(VaultStore.Profile.REAL, pin)
+        startActivity(Intent(this, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        })
         finish()
+    }
+
+    private fun showError(resId: Int) {
+        if (resId == 0) {
+            error.visibility = TextView.GONE
+        } else {
+            error.setText(resId)
+            error.visibility = TextView.VISIBLE
+        }
     }
 }

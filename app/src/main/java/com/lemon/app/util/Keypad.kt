@@ -12,7 +12,7 @@ import com.lemon.app.R
 class Keypad(
     private val root: View,
     private val dotsContainer: LinearLayout,
-    private val maxLen: Int = 8
+    private val maxLen: Int = 4
 ) {
     private val input = StringBuilder()
     private val dots = ArrayList<TextView>(maxLen)

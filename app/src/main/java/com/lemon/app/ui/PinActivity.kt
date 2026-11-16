@@ -2,7 +2,6 @@ package com.lemon.app.ui
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import com.lemon.app.R
@@ -11,16 +10,14 @@ import com.lemon.app.util.Keypad
 import com.lemon.app.util.SecureActivity
 
 /**
- * PIN lock.
- *  - real PIN      -> real vault
- *  - secret PIN    -> secret (polished decoy) vault
- *  - any other PIN -> pseudo (fake) vault
+ * PIN unlock. Correct PIN opens the real vault; any wrong PIN opens the
+ * pseudo decoy vault. Exactly 4 digits.
  */
 class PinActivity : SecureActivity() {
 
     private lateinit var keypad: Keypad
-    private lateinit var hint: TextView
     private lateinit var error: TextView
+    private var opening = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,54 +29,36 @@ class PinActivity : SecureActivity() {
         }
 
         setContentView(R.layout.activity_pin)
-
-        hint = findViewById(R.id.pin_hint)
-        hint.text = getString(R.string.pin_hint_text)
         error = findViewById(R.id.pin_error)
-        keypad = Keypad(findViewById(R.id.keypad), findViewById(R.id.pin_dots))
-
-        findViewById<Button>(R.id.pin_confirm).setOnClickListener { attemptUnlock() }
-
-        // If the vault is already unlocked (e.g. process re-created), skip ahead.
-        if (VaultStore.unlocked) {
-            goToMain()
-        }
+        keypad = Keypad(
+            root = window.decorView,
+            dotsContainer = findViewById(R.id.pin_dots),
+            maxLen = 4
+        )
+        val confirm = findViewById<Button>(R.id.pin_confirm)
+        confirm.setOnClickListener { unlock() }
     }
 
-    private fun attemptUnlock() {
+    private fun unlock() {
+        if (opening) return
         val pin = keypad.pin()
-        if (pin.isEmpty()) {
-            showError(getString(R.string.pin_wrong))
+        if (pin.length != 4) {
+            error.setText(R.string.pin_not_4)
+            error.visibility = TextView.VISIBLE
             return
         }
-        error.visibility = View.GONE
+        error.visibility = TextView.GONE
+        opening = true
 
         if (VaultStore.tryUnlock(VaultStore.Profile.REAL, pin)) {
-            goToMain()
-            return
+            // real vault
+        } else {
+            // decoy: any wrong PIN opens the pseudo vault
+            VaultStore.unlockPseudo()
         }
-        if (VaultStore.hasPin(VaultStore.Profile.SECRET) &&
-            VaultStore.tryUnlock(VaultStore.Profile.SECRET, pin)
-        ) {
-            goToMain()
-            return
-        }
-        // Any wrong PIN opens the pseudo decoy - no error shown on purpose.
-        VaultStore.unlockPseudo()
-        goToMain()
-    }
-
-    private fun showError(msg: String) {
-        error.text = msg
-        error.visibility = View.VISIBLE
-        keypad.clear()
-    }
-
-    private fun goToMain() {
-        keypad.clear()
-        val intent = Intent(this, MainActivity::class.java)
-        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        startActivity(intent)
+        startActivity(Intent(this, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        })
         finish()
     }
 }

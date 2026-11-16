@@ -8,12 +8,11 @@ import java.io.File
 
 /**
  * Holds the unlocked vault in memory and persists it as an encrypted file.
- * Three profiles exist: REAL (your PIN), SECRET (secret PIN, polished decoy)
- * and PSEUDO (any wrong PIN, obvious decoy).
+ * Two profiles exist: REAL (your 4-digit PIN) and PSEUDO (any wrong PIN).
  */
 object VaultStore {
 
-    enum class Profile { REAL, PSEUDO, SECRET }
+    enum class Profile { REAL, PSEUDO }
 
     private const val PREFS = "lemon_prefs"
     private const val KEY_SETUP_DONE = "setup_done"
@@ -94,13 +93,37 @@ object VaultStore {
                 CryptoManager.randomBytes(16)
             }
         } else {
-            // First run: create a stable salt for the decoy vault.
             val newSalt = CryptoManager.randomBytes(16)
             p.edit().putString(saltKey(Profile.PSEUDO), CryptoManager.b64(newSalt)).apply()
             newSalt
         }
         val key = CryptoManager.deriveKey(PSEUDO_PIN, salt)
         unlockWith(Profile.PSEUDO, key)
+        return true
+    }
+
+    /** Re-encrypts the vault with a new PIN. */
+    fun changePin(currentPin: String, newPin: String): Boolean {
+        val p = prefs ?: return false
+        if (readOnly) return false
+        val saltB64 = p.getString(saltKey(Profile.REAL), null) ?: return false
+        val verifier = p.getString(verifierKey(Profile.REAL), null) ?: return false
+        val salt = try {
+            CryptoManager.unb64(saltB64)
+        } catch (e: Exception) {
+            return false
+        }
+        val oldKey = CryptoManager.deriveKey(currentPin, salt)
+        if (!CryptoManager.checkVerifier(oldKey, verifier)) return false
+
+        val newSalt = CryptoManager.randomBytes(16)
+        val newKey = CryptoManager.deriveKey(newPin, newSalt)
+        masterKey = newKey
+        persist() // re-encrypt current in-memory data with the new key
+        p.edit()
+            .putString(saltKey(Profile.REAL), CryptoManager.b64(newSalt))
+            ?.putString(verifierKey(Profile.REAL), CryptoManager.makeVerifier(newKey))
+            ?.apply()
         return true
     }
 
@@ -201,7 +224,6 @@ object VaultStore {
     private fun seedIfEmpty() {
         when (profile) {
             Profile.PSEUDO -> SeedData.pseudo(entries, totps)
-            Profile.SECRET -> SeedData.secret(entries, totps)
             Profile.REAL -> {
                 entries.clear()
                 totps.clear()
