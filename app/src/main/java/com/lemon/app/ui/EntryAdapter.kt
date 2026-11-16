@@ -99,7 +99,7 @@ class EntryAdapter(
         }
         holder.itemView.setOnClickListener {
             if (expanded.contains(entry.id)) expanded.remove(entry.id) else expanded.add(entry.id)
-            notifyItemChanged(holder.bindingAdapterPosition)
+            notifyItemChanged(holder.adapterPosition)
         }
         holder.copy.setOnClickListener { onCopy(entry) }
         holder.edit.setOnClickListener { onEdit(entry) }

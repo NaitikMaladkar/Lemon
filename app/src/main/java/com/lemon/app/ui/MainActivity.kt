@@ -17,6 +17,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.lemon.app.R
 import com.lemon.app.data.TotpEntry
 import com.lemon.app.data.VaultStore
+import com.lemon.app.totp.Totp
 import com.lemon.app.util.SecureActivity
 
 /**
