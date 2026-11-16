@@ -40,3 +40,15 @@ No network permission is requested.
 ## License
 
 MIT — do anything, no warranty.
+
+## Brand assets & posters
+
+Logo: ![Lemon logo](logo.png)
+
+Feature posters (portrait):
+
+| | |
+|---|---|
+| ![poster 1](img.png) | ![poster 2](img1.png) |
+| ![poster 3](img2.png) | ![poster 4](img3.png) |
+| ![poster 5](img4.png) | ![poster 6](img5.png) |
