@@ -79,6 +79,16 @@ jobs:
           channel: stable
           cache: true
 
+      - name: Inspect Visual Studio
+        shell: pwsh
+        run: |
+          $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+          if (Test-Path $vswhere) {
+            & $vswhere -products * -version 16.0 -prerelease -format json
+            & $vswhere -products * -version 16.0 -requires Microsoft.VisualStudio.Workload.NativeDesktop Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -format json
+          } else { Write-Host "vswhere missing" }
+          flutter doctor -v
+
       - name: Build Windows
         run: |
           flutter pub get
