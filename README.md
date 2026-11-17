@@ -1,64 +1,95 @@
 # Lemon 🍋 — Citrus Manager
 
-A lightweight, **completely offline** Android vault for passwords, passphrases and
-TOTP codes, with a 4-digit PIN lock and a pseudo decoy mode.
+A **cross-platform**, completely **offline** vault for passwords, passphrases and
+TOTP codes — written **entirely in Flutter** (Dart) and shipping to **Android,
+Windows and Linux** from one codebase.
 
-## Features
+<p align="center">
+  <img src="logo.png" width="140" alt="Lemon logo">
+</p>
 
-- **Live TOTP home screen** — RFC 6238 codes with a mini **circular lemon timer**:
-  one citrus slice disappears every second, the lemon is fully eaten at 30 s and
-  then regrows. Tap a card to copy, or use the copy / edit / delete buttons
-  beside the lemon
-- **Add by QR** — CameraX + ZXing with a framed, masked scanning window (only the
-  square inside the grid is scanned) or manual Base32 entry
-- **Password Manager** — separate **Passwords** and **Passphrases** sections with
-  name / username, tap-to-copy, edit and delete
-- **Password generator** — one tap makes a unique 32-character random string
-  (`a-z`, `A-Z`, `0-9`, symbols & punctuation), shown inline
-- **Passphrase generator** — choose 1–32 words from a built-in English dictionary,
-  shown numbered and editable per word or as a whole sequence
-- **Encrypted storage** — the vault is JSON encrypted with **AES-256-GCM**; the key is
-  derived from your PIN with **PBKDF2-HMAC-SHA256** (120k iterations, random salt)
-- **Fully offline** — no `INTERNET` permission, no analytics, no cloud
-- **No screenshots / screen recording** — `FLAG_SECURE` on every screen
-- **PIN lock** — exactly 4 digits; correct PIN opens the real vault, any wrong PIN
-  opens the **Pseudo** decoy vault
-- **Settings** — theme (system / light / dark), change PIN, lock now, erase all data
+## What it does
 
-## What's new in v1.3
+| | |
+| --- | --- |
+| 🍋 **Live TOTP codes** | The countdown is a mini circular lemon cut into one slice per second. Each slice is eaten as its second passes, the lemon is gone at 30 s and a fresh one grows for the next window. Tap a card to copy, or use the copy / edit / delete buttons right beside the lemon. |
+| 🔑 **Password manager** | Passwords and passphrases in two sections, tap-to-copy, reveal, edit and delete. Passphrases expand into numbered words. |
+| 🎲 **Generators** | One tap for a 32-character password (every character class guaranteed) or a 1–32 word passphrase from a built-in dictionary. |
+| 📷 **QR scanning** | Camera scans inside a framed grid — everything outside the square is a translucent theme-coloured mask. Only the square is decoded. |
+| 🔒 **PIN lock + decoy** | Exactly 4 digits. The correct PIN opens the real vault; **any other PIN opens a decoy vault** with plausible fake data. |
+| 🛡️ **Encrypted** | Vault is AES-256-GCM; the key comes from your PIN via PBKDF2-HMAC-SHA256 (120k rounds, random salt). |
+| 🚫 **No screenshots** | `FLAG_SECURE` on Android, blocked capture APIs elsewhere. |
+| ✈️ **Fully offline** | No `INTERNET` permission on Android, no telemetry, no cloud, no accounts. |
 
-- Fixed the **Settings crash** (a card in the layout had no `layout_width`/`layout_height`,
-  so the screen threw an `InflateException` before it could draw)
-- **Nothing is wiped on launch any more** — saves are written atomically
-  (temp file → fsync → rename) with an automatic `.bak` fallback, the setup flag and
-  PIN salt are committed synchronously, and every screen returns to the PIN screen
-  when the in-memory vault is locked (previously a restored task showed an empty
-  vault and silently dropped new entries)
-- **Smooth everywhere** — PIN verification and PIN creation run off the main thread
-  with a small spinner, dots pop when filled, keys dip on press, a wrong PIN gives a
-  springy shake instead of a freeze, and activities open with a short fade + rise
-- TOTP list no longer rebinds every second (only the code text updates when the
-  window rolls over), so no more stutter
-- Scanner masks everything outside the QR window and shows a grid + lemon brackets
+## Screenshots
 
-## Build
+<p align="center">
+  <img src="screens/unlock.png" width="180" alt="Unlock">
+  <img src="screens/codes.png" width="180" alt="TOTP codes with lemon timers">
+  <img src="screens/vault.png" width="180" alt="Password vault">
+  <img src="screens/settings.png" width="180" alt="Settings">
+</p>
+
+## Downloads
+
+Every tagged release publishes all three builds:
+
+- **Android** — `Lemon-<tag>.apk` (install directly, sideload; no Play Store needed)
+- **Windows** — `Lemon-<tag>-windows.zip` (unzip, run `lemon.exe`)
+- **Linux** — `Lemon-<tag>-linux.tar.gz` (untar, run `./lemon`; needs GTK 3)
+
+## Design
+
+The UI is a warm citrus theme built with Material 3 — cream surfaces, gold
+accents, leaf green highlights, and a matching dark mode. Everything is animated
+with short, spring-based transitions: dots pop as you type a PIN, keys dip on
+press, a wrong PIN shakes, cards stagger in, and screens cross-fade instead of
+cutting.
+
+## Build from source
 
 ```bash
-./gradlew assembleRelease
-# -> app/build/outputs/apk/release/app-release.apk
+flutter pub get
+flutter test          # 19 unit + widget tests
+flutter analyze
+
+flutter build apk --release       # Android
+flutter build windows --release   # Windows (on Windows)
+flutter build linux --release     # Linux (needs clang, cmake, ninja, libgtk-3-dev)
 ```
 
-Requirements: JDK 17+, Android SDK 34. Kotlin, Material 3, CameraX, ZXing core.
-No network permission is requested.
+Requires Flutter 3.24.x / Dart 3.5.
+
+### Project layout
+
+```
+lib/
+  main.dart                  app entry, theme mode, desktop window bounds
+  src/
+    theme.dart               palette + Material 3 theme (light & dark)
+    models.dart              VaultEntry / TotpEntry (JSON round-trip)
+    crypto_util.dart         PBKDF2 key derivation, AES-256-GCM, verifier
+    vault_store.dart         encrypted store, atomic saves, real + decoy vaults
+    totp.dart                RFC 6238 TOTP + otpauth:// parsing
+    generator.dart           password / passphrase generation
+    wordlist.dart            256-word dictionary
+    screens/                 setup, unlock, home shell, codes, vault,
+                             settings, entry + TOTP editors, scanner
+    widgets/                 lemon timer, PIN entry, header, cards, logo
+    platform/                secure-screen channel
+android/                     Java-only host (FLAG_SECURE + launcher icon)
+windows/  linux/             desktop runners
+test/                        crypto, TOTP vectors, persistence, widget tests
+```
 
 ## Security notes
 
-- The real vault is only decrypted in memory after a successful 4-digit PIN unlock.
-- The pseudo decoy vault is a separate encrypted file, reachable by any wrong PIN,
-  so a forced unlock always shows plausible fake data.
-- The release APK produced by CI is signed with the debug keystore so it installs
-  directly. For public distribution, add your own release keystore and signing config.
-
-## License
-
-MIT — do anything, no warranty.
+- The vault file is never partially written: saves go to a temp file, are
+  flushed, renamed into place, and mirrored to `<vault>.bak`. A corrupt main
+  file falls back to the backup instead of showing an empty vault.
+- The real vault and the decoy vault are separate encrypted files with separate
+  salts. Erasing data deletes both plus all PIN material.
+- Changing the PIN re-encrypts the vault; inside the decoy vault it only
+  pretends to (so it cannot break the real vault).
+- The release APK is signed with Flutter's debug keystore so it installs
+  anywhere. Use your own keystore for store distribution.

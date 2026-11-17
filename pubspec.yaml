@@ -1,0 +1,25 @@
+name: lemon
+description: "Lemon - a lightweight, fully offline citrus vault for passwords, passphrases and TOTP codes."
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.3.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  crypto: ^3.0.5
+  cryptography: ^2.7.0
+  path_provider: ^2.1.4
+  mobile_scanner: 5.2.3
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/logo.png
