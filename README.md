@@ -32,9 +32,10 @@ Windows and Linux** from one codebase.
 
 ## Downloads
 
-Every tagged release publishes all three builds:
+Every tagged release publishes all three platforms (built by GitHub Actions on
+every push of the `v1` tag):
 
-- **Android** — `Lemon-<tag>.apk` (install directly, sideload; no Play Store needed)
+- **Android** — `Lemon-<tag>.apk` (universal, installs on any device) or a smaller per-ABI build: `Lemon-<tag>-arm64-v8a.apk`, `-armeabi-v7a.apk`, `-x86_64.apk`
 - **Windows** — `Lemon-<tag>-windows.zip` (unzip, run `lemon.exe`)
 - **Linux** — `Lemon-<tag>-linux.tar.gz` (untar, run `./lemon`; needs GTK 3)
 
