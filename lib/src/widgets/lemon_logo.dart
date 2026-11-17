@@ -82,14 +82,14 @@ class LogoPlate extends StatelessWidget {
           end: Alignment.bottomRight,
           colors: dark
               ? <Color>[LemonPalette.nightSurfaceAlt, LemonPalette.nightSurface]
-              : <Color>[Colors.white, LemonPalette.citrusSoft.withOpacity(0.55)],
+              : <Color>[Colors.white, LemonPalette.citrusSoft.withValues(alpha: 0.55)],
         ),
         border: Border.all(
-          color: (dark ? LemonPalette.nightLine : LemonPalette.citrus).withOpacity(0.35),
+          color: (dark ? LemonPalette.nightLine : LemonPalette.citrus).withValues(alpha: 0.35),
         ),
         boxShadow: <BoxShadow>[
           BoxShadow(
-            color: LemonPalette.citrusDeep.withOpacity(dark ? 0.10 : 0.18),
+            color: LemonPalette.citrusDeep.withValues(alpha: dark ? 0.10 : 0.18),
             blurRadius: 24,
             offset: const Offset(0, 10),
           ),

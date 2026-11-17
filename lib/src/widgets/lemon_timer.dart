@@ -68,7 +68,7 @@ class _LemonPainter extends CustomPainter {
     canvas.drawCircle(
       center,
       radius,
-      Paint()..color = (dark ? Colors.white : LemonPalette.citrus).withOpacity(0.07),
+      Paint()..color = (dark ? Colors.white : LemonPalette.citrus).withValues(alpha: 0.07),
     );
 
     final int count = math.min(period <= 0 ? 30 : period, 30);
@@ -113,20 +113,20 @@ class _LemonPainter extends CustomPainter {
         ..style = PaintingStyle.stroke
         ..strokeWidth = 1.4
         ..color = (urgent ? LemonPalette.danger : LemonPalette.citrusDeep)
-            .withOpacity(0.35),
+            .withValues(alpha: 0.35),
     );
 
     // pith + core holding the seconds
     canvas.drawCircle(
       center,
       coreRadius + 2,
-      Paint()..color = (dark ? LemonPalette.nightSurface : Colors.white).withOpacity(0.92),
+      Paint()..color = (dark ? LemonPalette.nightSurface : Colors.white).withValues(alpha: 0.92),
     );
     canvas.drawCircle(
       center,
       coreRadius,
       Paint()..color = (urgent ? LemonPalette.danger : LemonPalette.citrus)
-          .withOpacity(dark ? 0.28 : 0.20),
+          .withValues(alpha: dark ? 0.28 : 0.20),
     );
 
     // little leaf

@@ -33,8 +33,8 @@ class LemonCard extends StatelessWidget {
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(radius),
-        splashColor: LemonPalette.citrus.withOpacity(0.12),
-        highlightColor: LemonPalette.citrus.withOpacity(0.06),
+        splashColor: LemonPalette.citrus.withValues(alpha: 0.12),
+        highlightColor: LemonPalette.citrus.withValues(alpha: 0.06),
         child: Ink(
           decoration: BoxDecoration(
             color: bg,
@@ -42,7 +42,7 @@ class LemonCard extends StatelessWidget {
             border: Border.all(color: border),
             boxShadow: <BoxShadow>[
               BoxShadow(
-                color: Colors.black.withOpacity(dark ? 0.22 : 0.045),
+                color: Colors.black.withValues(alpha: dark ? 0.22 : 0.045),
                 blurRadius: 18,
                 offset: const Offset(0, 6),
               ),
@@ -111,7 +111,7 @@ class EmptyState extends StatelessWidget {
               height: 78,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: LemonPalette.citrus.withOpacity(dark ? 0.14 : 0.12),
+                color: LemonPalette.citrus.withValues(alpha: dark ? 0.14 : 0.12),
               ),
               child: Icon(icon, size: 34, color: LemonPalette.citrusDeep),
             ),

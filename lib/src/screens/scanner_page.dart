@@ -93,8 +93,7 @@ class _ScannerPageState extends State<ScannerPage>
             MobileScanner(
               controller: _controller,
               onDetect: _onDetect,
-              errorBuilder: (BuildContext context, MobileScannerException e,
-                  Widget? child) {
+              errorBuilder: (BuildContext context, MobileScannerException e) {
                 return _CameraMessage(
                   message: 'Camera unavailable',
                   detail: e.errorDetails?.message ?? 'Check camera permissions.',
@@ -128,7 +127,7 @@ class _ScannerPageState extends State<ScannerPage>
                         children: <Widget>[
                           Container(
                             decoration: BoxDecoration(
-                              color: Colors.black.withOpacity(0.45),
+                              color: Colors.black.withValues(alpha: 0.45),
                               shape: BoxShape.circle,
                             ),
                             child: IconButton(
@@ -139,7 +138,7 @@ class _ScannerPageState extends State<ScannerPage>
                           const Spacer(),
                           Container(
                             decoration: BoxDecoration(
-                              color: Colors.black.withOpacity(0.45),
+                              color: Colors.black.withValues(alpha: 0.45),
                               shape: BoxShape.circle,
                             ),
                             child: IconButton(
@@ -167,7 +166,7 @@ class _ScannerPageState extends State<ScannerPage>
                         vertical: 11,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.55),
+                        color: Colors.black.withValues(alpha: 0.55),
                         borderRadius: BorderRadius.circular(24),
                       ),
                       child: Text(
@@ -321,14 +320,14 @@ class _GridWindowState extends State<_GridWindow>
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: <Color>[
-                    LemonPalette.citrus.withOpacity(0.0),
+                    LemonPalette.citrus.withValues(alpha: 0.0),
                     LemonPalette.citrus,
-                    LemonPalette.citrus.withOpacity(0.0),
+                    LemonPalette.citrus.withValues(alpha: 0.0),
                   ],
                 ),
                 boxShadow: <BoxShadow>[
                   BoxShadow(
-                    color: LemonPalette.citrus.withOpacity(0.55),
+                    color: LemonPalette.citrus.withValues(alpha: 0.55),
                     blurRadius: 16,
                   ),
                 ],
@@ -347,7 +346,7 @@ class _GridPainter extends CustomPainter {
     final Paint paint = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = 0.9
-      ..color = Colors.white.withOpacity(0.22);
+      ..color = Colors.white.withValues(alpha: 0.22);
 
     for (int i = 1; i < 3; i++) {
       final double x = size.width * i / 3;

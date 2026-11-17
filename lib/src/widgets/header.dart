@@ -35,7 +35,7 @@ class LemonHeader extends StatelessWidget {
         ),
         boxShadow: <BoxShadow>[
           BoxShadow(
-            color: LemonPalette.citrusDeep.withOpacity(dark ? 0.18 : 0.32),
+            color: LemonPalette.citrusDeep.withValues(alpha: dark ? 0.18 : 0.32),
             blurRadius: 26,
             offset: const Offset(0, 12),
           ),
@@ -53,7 +53,7 @@ class LemonHeader extends StatelessWidget {
                 height: 170,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: Colors.white.withOpacity(dark ? 0.05 : 0.16),
+                  color: Colors.white.withValues(alpha: dark ? 0.05 : 0.16),
                 ),
               ),
             ),
@@ -65,7 +65,7 @@ class LemonHeader extends StatelessWidget {
                 height: 110,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: Colors.white.withOpacity(dark ? 0.04 : 0.10),
+                  color: Colors.white.withValues(alpha: dark ? 0.04 : 0.10),
                 ),
               ),
             ),
@@ -79,7 +79,7 @@ class LemonHeader extends StatelessWidget {
                       height: 46,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: Colors.white.withOpacity(dark ? 0.10 : 0.92),
+                        color: Colors.white.withValues(alpha: dark ? 0.10 : 0.92),
                       ),
                       alignment: Alignment.center,
                       child: const LemonLogo(size: 30),
@@ -111,7 +111,7 @@ class LemonHeader extends StatelessWidget {
                             fontSize: 12.5,
                             fontWeight: FontWeight.w500,
                             color: (dark ? LemonPalette.nightInk : Colors.white)
-                                .withOpacity(0.82),
+                                .withValues(alpha: 0.82),
                           ),
                         ),
                       ],
@@ -147,7 +147,7 @@ class HeaderAction extends StatelessWidget {
     final Widget button = Padding(
       padding: const EdgeInsets.only(left: 6),
       child: Material(
-        color: Colors.white.withOpacity(dark ? 0.10 : 0.22),
+        color: Colors.white.withValues(alpha: dark ? 0.10 : 0.22),
         shape: const CircleBorder(),
         child: InkWell(
           customBorder: const CircleBorder(),

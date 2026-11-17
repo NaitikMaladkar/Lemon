@@ -51,7 +51,7 @@ class _PinScaffoldState extends State<PinScaffold>
             right: -90,
             child: _Blob(
               size: 300,
-              color: LemonPalette.citrus.withOpacity(dark ? 0.10 : 0.20),
+              color: LemonPalette.citrus.withValues(alpha: dark ? 0.10 : 0.20),
             ),
           ),
           Positioned(
@@ -59,7 +59,7 @@ class _PinScaffoldState extends State<PinScaffold>
             left: -110,
             child: _Blob(
               size: 320,
-              color: LemonPalette.leaf.withOpacity(dark ? 0.10 : 0.10),
+              color: LemonPalette.leaf.withValues(alpha: dark ? 0.10 : 0.10),
             ),
           ),
           SafeArea(
@@ -139,7 +139,7 @@ class _Blob extends StatelessWidget {
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         gradient: RadialGradient(
-          colors: <Color>[color, color.withOpacity(0.0)],
+          colors: <Color>[color, color.withValues(alpha: 0.0)],
         ),
       ),
     );

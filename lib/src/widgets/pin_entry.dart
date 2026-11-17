@@ -220,7 +220,7 @@ class _Dots extends StatelessWidget {
               boxShadow: on
                   ? <BoxShadow>[
                       BoxShadow(
-                        color: active.withOpacity(0.45),
+                        color: active.withValues(alpha: 0.45),
                         blurRadius: 12,
                         spreadRadius: 1,
                       ),
@@ -341,7 +341,7 @@ class _KeyButtonState extends State<_KeyButton> {
             alignment: Alignment.center,
             decoration: BoxDecoration(
               color: _down
-                  ? LemonPalette.citrus.withOpacity(dark ? 0.30 : 0.20)
+                  ? LemonPalette.citrus.withValues(alpha: dark ? 0.30 : 0.20)
                   : base,
               borderRadius: BorderRadius.circular(22),
               border: Border.all(color: _down ? LemonPalette.citrus : line),
@@ -349,7 +349,7 @@ class _KeyButtonState extends State<_KeyButton> {
                   ? null
                   : <BoxShadow>[
                       BoxShadow(
-                        color: Colors.black.withOpacity(dark ? 0.18 : 0.04),
+                        color: Colors.black.withValues(alpha: dark ? 0.18 : 0.04),
                         blurRadius: 10,
                         offset: const Offset(0, 3),
                       ),

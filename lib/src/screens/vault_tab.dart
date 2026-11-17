@@ -200,12 +200,12 @@ class _EntryTileState extends State<_EntryTile> {
                   gradient: LinearGradient(
                     colors: entry.isPassphrase
                         ? <Color>[
-                            LemonPalette.leaf.withOpacity(0.22),
-                            LemonPalette.leaf.withOpacity(0.10),
+                            LemonPalette.leaf.withValues(alpha: 0.22),
+                            LemonPalette.leaf.withValues(alpha: 0.10),
                           ]
                         : <Color>[
-                            LemonPalette.citrus.withOpacity(0.28),
-                            LemonPalette.citrus.withOpacity(0.12),
+                            LemonPalette.citrus.withValues(alpha: 0.28),
+                            LemonPalette.citrus.withValues(alpha: 0.12),
                           ],
                   ),
                 ),

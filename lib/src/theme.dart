@@ -137,7 +137,7 @@ class LemonTheme {
           borderSide: const BorderSide(color: LemonPalette.danger),
         ),
       ),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: isDark ? LemonPalette.nightSurface : LemonPalette.surface,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
@@ -147,7 +147,7 @@ class LemonTheme {
           side: BorderSide(color: line),
         ),
       ),
-      dialogTheme: DialogTheme(
+      dialogTheme: DialogThemeData(
         backgroundColor: isDark ? LemonPalette.nightSurface : LemonPalette.surface,
         surfaceTintColor: Colors.transparent,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(26)),
@@ -173,7 +173,7 @@ class LemonTheme {
         activeTrackColor: scheme.primary,
         inactiveTrackColor: line,
         thumbColor: scheme.primary,
-        overlayColor: scheme.primary.withOpacity(0.12),
+        overlayColor: scheme.primary.withValues(alpha: 0.12),
         trackHeight: 5,
       ),
       switchTheme: SwitchThemeData(

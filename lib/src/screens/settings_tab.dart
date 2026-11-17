@@ -354,7 +354,7 @@ class _SettingRow extends StatelessWidget {
                 ],
               ),
             ),
-            Icon(Icons.chevron_right_rounded, color: color.withOpacity(0.6)),
+            Icon(Icons.chevron_right_rounded, color: color.withValues(alpha: 0.6)),
           ],
         ),
       ),

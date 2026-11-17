@@ -146,7 +146,7 @@ class _LemonNav extends StatelessWidget {
             bottom: 8 + MediaQuery.of(context).padding.bottom * 0.4,
           ),
           decoration: BoxDecoration(
-            color: background.withOpacity(dark ? 0.86 : 0.92),
+            color: background.withValues(alpha: dark ? 0.86 : 0.92),
             border: Border(
               top: BorderSide(
                 color: dark ? LemonPalette.nightLine : LemonPalette.line,
@@ -202,7 +202,7 @@ class _NavItem extends StatelessWidget {
               duration: const Duration(milliseconds: 220),
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
               decoration: BoxDecoration(
-                color: selected ? active.withOpacity(0.16) : Colors.transparent,
+                color: selected ? active.withValues(alpha: 0.16) : Colors.transparent,
                 borderRadius: BorderRadius.circular(14),
               ),
               child: Icon(icon, size: 21, color: selected ? active : idle),
@@ -322,7 +322,7 @@ class _SheetOption extends StatelessWidget {
               height: 44,
               alignment: Alignment.center,
               decoration: BoxDecoration(
-                color: LemonPalette.citrus.withOpacity(0.22),
+                color: LemonPalette.citrus.withValues(alpha: 0.22),
                 borderRadius: BorderRadius.circular(14),
               ),
               child: Icon(icon, size: 22, color: LemonPalette.citrusDeep),
