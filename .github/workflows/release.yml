@@ -1,8 +1,8 @@
 name: Build & Release
 
 # One tag -> one release with exactly two files:
-#   Lemon-<tag>.apk            Android, universal, installs on any phone
-#   Lemon-<tag>-windows.zip    unzip and run lemon.exe
+#   Lemon-<tag>.apk           Android, one file, installs on any phone
+#   Lemon-<tag>-setup.exe     Windows installer (falls back to a portable zip)
 # (Linux users build from source: flutter build linux --release)
 
 on:
@@ -65,8 +65,8 @@ jobs:
 
             | Platform | File |
             | --- | --- |
-            | Android | `Lemon-${{ github.ref_name }}.apk` — install directly |
-            | Windows | `Lemon-${{ github.ref_name }}-windows.zip` — unzip, run `lemon.exe` |
+            | Android | `Lemon-${{ github.ref_name }}.apk` — one file, install directly |
+            | Windows | `Lemon-${{ github.ref_name }}-setup.exe` — run it, click through |
 
             Linux: build from source with Flutter (`flutter build linux --release`).
 
@@ -90,7 +90,62 @@ jobs:
           flutter pub get
           flutter build windows --release
 
-      - name: Package
+      - name: Build installer (single .exe)
+        id: installer
+        continue-on-error: true
+        shell: pwsh
+        run: |
+          choco install innosetup --no-progress -y | Out-Null
+          $iscc = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
+          if (-not (Test-Path $iscc)) { throw "ISCC not found" }
+
+          $tag = "${{ github.ref_name }}"
+          # AppVersion stays numeric: "1.1.0", derived from the tag "v1.1"
+          $ver = ($tag -replace '^v','') -replace '^(\d+\.\d+)$','$1.0'
+
+          $iss  = @"
+          [Setup]
+          AppName=Lemon
+          AppVersion=$ver
+          AppPublisher=Lemon
+          DefaultDirName={autopf}\Lemon
+          DefaultGroupName=Lemon
+          OutputDir=out
+          OutputBaseFilename=Lemon-$tag-setup
+          SetupIconFile=windows\runner\resources\app_icon.ico
+          UninstallDisplayIcon={app}\lemon.exe
+          Compression=lzma2/max
+          SolidCompression=yes
+          WizardStyle=compact
+          ArchitecturesInstallIn64BitMode=x64compatible
+
+          [Files]
+          Source: "build\windows\x64\runner\Release\*"; DestDir: "{app}"; Flags: recursesubdirs createallsubdirs ignoreversion
+
+          [Icons]
+          Name: "{autoprograms}\Lemon"; Filename: "{app}\lemon.exe"
+          Name: "{autodesktop}\Lemon"; Filename: "{app}\lemon.exe"; Tasks: desktopicon
+
+          [Tasks]
+          Name: "desktopicon"; Description: "Create a desktop shortcut"; GroupDescription: "Shortcuts:"
+
+          [Run]
+          Filename: "{app}\lemon.exe"; Description: "Launch Lemon"; Flags: nowait postinstall skipifsilent
+          "@
+          Set-Content -Path installer.iss -Value $iss -Encoding UTF8
+          & $iscc installer.iss | Write-Host
+          if (-not (Test-Path "out/Lemon-$tag-setup.exe")) { throw "installer missing" }
+
+      - name: Publish installer
+        if: steps.installer.outcome == 'success'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: out/Lemon-${{ github.ref_name }}-setup.exe
+          overwrite: true
+          fail_on_unmatched_files: true
+
+      - name: Fallback - publish portable zip
+        if: steps.installer.outcome != 'success'
         shell: pwsh
         run: |
           $src = "build/windows/x64/runner/Release"
@@ -99,7 +154,8 @@ jobs:
           Copy-Item -Recurse -Force "$src/*" $dst
           Compress-Archive -Path $dst -DestinationPath "out/Lemon-${{ github.ref_name }}-windows.zip" -Force
 
-      - name: Publish zip
+      - name: Publish portable zip
+        if: steps.installer.outcome != 'success'
         uses: softprops/action-gh-release@v2
         with:
           files: out/Lemon-${{ github.ref_name }}-windows.zip
