@@ -1,0 +1,55 @@
+plugins {
+    id "com.android.application"
+    id "dev.flutter.flutter-gradle-plugin"
+}
+
+android {
+    namespace = "com.lemon.app"
+    compileSdk = flutter.compileSdkVersion
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+
+    signingConfigs {
+        release {
+            // Only used when a keystore is supplied; otherwise the debug key
+            // is reused so every build stays installable.
+            if (project.hasProperty("LEMON_KEYSTORE")) {
+                storeFile file(project.property("LEMON_KEYSTORE"))
+                storePassword project.property("LEMON_KEYSTORE_PASSWORD")
+                keyAlias project.property("LEMON_KEY_ALIAS")
+                keyPassword project.property("LEMON_KEY_PASSWORD")
+            }
+        }
+    }
+
+    defaultConfig {
+        applicationId = "com.lemon.app"
+        minSdkVersion = flutter.minSdkVersion
+        targetSdk = flutter.targetSdkVersion
+        versionCode = flutter.versionCode
+        versionName = flutter.versionName
+    }
+
+    // Every Android phone is ARM. Plugin AARs otherwise pack their x86_64
+    // libraries into the APK too — ~6 MB that no phone will ever load.
+    packaging {
+        jniLibs {
+            excludes += ["lib/x86_64/**", "lib/x86/**"]
+        }
+    }
+
+    buildTypes {
+        release {
+            signingConfig = project.hasProperty("LEMON_KEYSTORE")
+                    ? signingConfigs.release
+                    : signingConfigs.debug
+        }
+    }
+}
+
+flutter {
+    source = "../.."
+}
