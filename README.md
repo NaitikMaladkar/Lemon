@@ -1,8 +1,8 @@
 # Lemon 🍋 — Citrus Manager
 
 A **cross-platform**, completely **offline** vault for passwords, passphrases and
-TOTP codes — written **entirely in Flutter** (Dart) and shipping to **Android,
-Windows and Linux** from one codebase.
+TOTP codes — written **entirely in Flutter** (Dart) and shipping to **Android and
+Windows** from one codebase (Linux builds from source).
 
 <p align="center">
   <img src="logo.png" width="140" alt="Lemon logo">
@@ -32,12 +32,10 @@ Windows and Linux** from one codebase.
 
 ## Downloads
 
-Every tagged release publishes all three platforms (built by GitHub Actions on
-every push of the `v1` tag):
+Every tagged release publishes two files (built by GitHub Actions on every tag):
 
-- **Android** — `Lemon-<tag>.apk` (universal, installs on any device) or a smaller per-ABI build: `Lemon-<tag>-arm64-v8a.apk`, `-armeabi-v7a.apk`, `-x86_64.apk`
-- **Windows** — `Lemon-<tag>-windows.zip` (unzip, run `lemon.exe`)
-- **Linux** — `Lemon-<tag>-linux.tar.gz` (untar, run `./lemon`; needs GTK 3)
+- **Android** — `Lemon-<tag>.apk` (single universal APK, installs on any phone; sideload, no Play Store needed)
+- **Windows** — `Lemon-<tag>-windows.zip` (unzip anywhere, run `lemon.exe`)
 
 ## Design
 
@@ -55,11 +53,11 @@ flutter test          # 19 unit + widget tests
 flutter analyze
 
 flutter build apk --release       # Android
-flutter build windows --release   # Windows (on Windows)
-flutter build linux --release     # Linux (needs clang, cmake, ninja, libgtk-3-dev)
+flutter build windows --release   # Windows (run on Windows)
+flutter create --platforms=linux .  # add the Linux runner first (not shipped)flutter build linux --release     # Linux (needs clang, cmake, ninja, libgtk-3-dev)
 ```
 
-Requires Flutter 3.24.x / Dart 3.5.
+Requires Flutter 3.50 / Dart 3.9 or newer.
 
 ### Project layout
 
@@ -79,7 +77,8 @@ lib/
     widgets/                 lemon timer, PIN entry, header, cards, logo
     platform/                secure-screen channel
 android/                     Java-only host (FLAG_SECURE + launcher icon)
-windows/  linux/             desktop runners
+windows/                     Windows runner
+linux/                       not tracked - recreate with `flutter create --platforms=linux .`
 test/                        crypto, TOTP vectors, persistence, widget tests
 ```
 

@@ -6,11 +6,23 @@ plugins {
 android {
     namespace = "com.lemon.app"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
+    }
+
+    signingConfigs {
+        release {
+            // Only used when a keystore is supplied; otherwise the debug key
+            // is reused so every build stays installable.
+            if (project.hasProperty("LEMON_KEYSTORE")) {
+                storeFile file(project.property("LEMON_KEYSTORE"))
+                storePassword project.property("LEMON_KEYSTORE_PASSWORD")
+                keyAlias project.property("LEMON_KEY_ALIAS")
+                keyPassword project.property("LEMON_KEY_PASSWORD")
+            }
+        }
     }
 
     defaultConfig {
@@ -21,27 +33,11 @@ android {
         versionName = flutter.versionName
     }
 
-    signingConfigs {
-        release {
-            // The CI workflow writes these properties from repository secrets.
-            // Without them the debug keystore keeps local builds installable.
-            def storeFilePath = project.findProperty("LEMON_KEYSTORE")
-            if (storeFilePath != null) {
-                storeFile file(storeFilePath)
-                storePassword project.findProperty("LEMON_KEYSTORE_PASSWORD")
-                keyAlias project.findProperty("LEMON_KEY_ALIAS")
-                keyPassword project.findProperty("LEMON_KEY_PASSWORD")
-            }
-        }
-    }
-
     buildTypes {
         release {
-            signingConfig = project.findProperty("LEMON_KEYSTORE") != null
+            signingConfig = project.hasProperty("LEMON_KEYSTORE")
                     ? signingConfigs.release
                     : signingConfigs.debug
-            minifyEnabled false
-            shrinkResources false
         }
     }
 }
@@ -49,5 +45,3 @@ android {
 flutter {
     source = "../.."
 }
-
-dependencies {}

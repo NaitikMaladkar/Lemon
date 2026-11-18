@@ -1,5 +1,10 @@
 name: Build & Release
 
+# One tag -> one release with exactly two files:
+#   Lemon-<tag>.apk            Android, universal, installs on any phone
+#   Lemon-<tag>-windows.zip    unzip and run lemon.exe
+# (Linux users build from source: flutter build linux --release)
+
 on:
   push:
     tags:
@@ -33,50 +38,40 @@ jobs:
           flutter analyze --no-fatal-infos
           flutter test
 
-      - name: Build APKs (one per ABI)
+      - name: Build APK
         run: |
+          # Single APK for real phones (arm64 + 32-bit ARM).
+          # x86_64 is emulator-only and would add ~24 MB.
           flutter build apk --release \
+            --target-platform android-arm,android-arm64 \
             --build-name=1.0.0 \
-            --build-number=${{ github.run_number }} \
-            --split-per-abi
+            --build-number=${{ github.run_number }}
 
-      - name: Rename artefacts
+      - name: Name the APK after the tag
         run: |
           mkdir -p out
-          cp build/app/outputs/flutter-apk/app-arm64-v8a-release.apk   "out/Lemon-${{ github.ref_name }}-arm64-v8a.apk"
-          cp build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk "out/Lemon-${{ github.ref_name }}-armeabi-v7a.apk"
-          cp build/app/outputs/flutter-apk/app-x86_64-release.apk      "out/Lemon-${{ github.ref_name }}-x86_64.apk"
-          # universal build so a single file still installs on anything
-          flutter build apk --release --build-name=1.0.0 --build-number=${{ github.run_number }}
           cp build/app/outputs/flutter-apk/app-release.apk "out/Lemon-${{ github.ref_name }}.apk"
           ls -la out
 
-      - uses: actions/upload-artifact@v4
-        with:
-          name: Lemon-android
-          path: out/*.apk
-
-      - name: Publish release asset
+      - name: Publish release
         uses: softprops/action-gh-release@v2
         with:
-          files: out/*.apk
+          files: out/Lemon-${{ github.ref_name }}.apk
           overwrite: true
           fail_on_unmatched_files: true
           name: Lemon ${{ github.ref_name }}
           body: |
-            **Lemon — Citrus Manager** (Flutter rewrite)
-
-            Download the build for your platform from the assets below:
+            **Lemon — Citrus Manager**
 
             | Platform | File |
             | --- | --- |
-            | Android (any device) | `Lemon-${{ github.ref_name }}.apk` |
-            | Android arm64 (smallest) | `Lemon-${{ github.ref_name }}-arm64-v8a.apk` |
-            | Windows | `Lemon-${{ github.ref_name }}-windows.zip` |
-            | Linux | `Lemon-${{ github.ref_name }}-linux.tar.gz` |
+            | Android | `Lemon-${{ github.ref_name }}.apk` — install directly |
+            | Windows | `Lemon-${{ github.ref_name }}-windows.zip` — unzip, run `lemon.exe` |
 
-            Fully offline: no network permission, AES-256-GCM vault,
-            4-digit PIN with a decoy vault, TOTP with the lemon slice timer.
+            Linux: build from source with Flutter (`flutter build linux --release`).
+
+            Fully offline — no network permission, AES-256-GCM vault, 4-digit PIN
+            with a decoy vault, TOTP with the lemon slice timer.
 
   windows:
     name: Windows build
@@ -104,54 +99,9 @@ jobs:
           Copy-Item -Recurse -Force "$src/*" $dst
           Compress-Archive -Path $dst -DestinationPath "out/Lemon-${{ github.ref_name }}-windows.zip" -Force
 
-      - uses: actions/upload-artifact@v4
-        with:
-          name: Lemon-windows
-          path: out/Lemon-${{ github.ref_name }}-windows.zip
-
-      - name: Publish release asset
+      - name: Publish zip
         uses: softprops/action-gh-release@v2
         with:
           files: out/Lemon-${{ github.ref_name }}-windows.zip
-          overwrite: true
-          fail_on_unmatched_files: true
-
-  linux:
-    name: Linux build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Install toolchain
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev libstdc++-12-dev
-
-      - uses: subosito/flutter-action@v2
-        with:
-          flutter-version: '3.50.0'
-          channel: stable
-          cache: true
-
-      - name: Build Linux
-        run: |
-          flutter pub get
-          flutter build linux --release
-
-      - name: Package
-        run: |
-          mkdir -p out
-          tar -czf "out/Lemon-${{ github.ref_name }}-linux.tar.gz" -C build/linux/x64/release/bundle .
-          ls -la out
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: Lemon-linux
-          path: out/Lemon-${{ github.ref_name }}-linux.tar.gz
-
-      - name: Publish release asset
-        uses: softprops/action-gh-release@v2
-        with:
-          files: out/Lemon-${{ github.ref_name }}-linux.tar.gz
           overwrite: true
           fail_on_unmatched_files: true
