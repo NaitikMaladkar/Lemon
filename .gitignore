@@ -1,0 +1,32 @@
+# Flutter / Dart
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+/build/
+/pubspec.lock.tmp
+
+# IDE / OS noise
+.idea/
+*.iml
+.vscode/
+.DS_Store
+*.log
+
+# Android
+android/.gradle/
+android/.kotlin/
+android/local.properties
+android/app/debug
+android/app/profile
+android/app/release
+android/app/src/main/java/io/flutter/plugins/GeneratedPluginRegistrant.java
+key.properties
+**/*.keystore
+**/*.jks
+
+# Windows
+windows/flutter/ephemeral/
+windows/.vs/
+
+# Linux (built from source, not tracked)
+linux/flutter/ephemeral/
