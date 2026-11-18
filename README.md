@@ -76,6 +76,7 @@ lib/
                              settings, entry + TOTP editors, scanner
     widgets/                 lemon timer, PIN entry, header, cards, logo
     platform/                secure-screen channel
+logo.png                     the only bundled asset (app logo)
 android/                     Java-only host (FLAG_SECURE + launcher icon)
 windows/                     Windows runner
 linux/                       not tracked - recreate with `flutter create --platforms=linux .`
