@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../theme.dart';
 import '../vault_store.dart';
 import '../widgets/pin_entry.dart';
 import '../widgets/pin_scaffold.dart';
@@ -12,19 +11,12 @@ class UnlockScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bool dark = Theme.of(context).brightness == Brightness.dark;
     return PinScaffold(
       title: 'Welcome back',
-      subtitle: 'Lemon is locked. Enter your 4-digit PIN to open the vault.',
-      footer: Text(
-        'Offline · encrypted · no screenshots',
-        style: TextStyle(
-          fontSize: 11.5,
-          letterSpacing: 0.4,
-          color: dark ? LemonPalette.nightInkSoft : LemonPalette.inkSoft,
-        ),
-      ),
+      subtitle: 'Enter your 4-digit PIN to open the vault.',
+      footer: 'Offline · encrypted · no screenshots',
       child: PinEntry(
+        hint: 'Enter your 4-digit PIN',
         onComplete: (String pin) async {
           final bool opened = await VaultStore.instance.unlock(pin);
           if (!opened) return 'Could not open the vault. Try again.';

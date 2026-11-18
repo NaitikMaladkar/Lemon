@@ -25,7 +25,7 @@ class SettingsTab extends StatelessWidget {
         ),
         Expanded(
           child: ListView(
-            padding: const EdgeInsets.fromLTRB(16, 10, 16, 120),
+            padding: EdgeInsets.fromLTRB(16, 10, 16, 132 + MediaQuery.viewPaddingOf(context).bottom),
             children: <Widget>[
               const SectionLabel('Appearance'),
               LemonCard(

@@ -105,6 +105,7 @@ class VaultStore extends ChangeNotifier {
     final Uint8List key = await deriveKeyOffThread(pin, salt);
 
     _meta['setup'] = true;
+    setupDone = true;
     _meta['saltReal'] = b64Encode(salt);
     _meta['verReal'] = await makeVerifier(key);
     await _saveMeta();

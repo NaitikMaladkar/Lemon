@@ -77,7 +77,7 @@ class _EntryEditorState extends State<EntryEditor> {
 
     if (existing != null && existing.isPassphrase) {
       final List<String> words = existing.words;
-      _wordCount = words.length.clamp(1, 32).toDouble();
+      _wordCount = words.length.clamp(PasswordGenerator.minWords, PasswordGenerator.maxWords).toDouble();
       for (final String word in words) {
         _words.add(TextEditingController(text: word));
       }
@@ -101,7 +101,8 @@ class _EntryEditorState extends State<EntryEditor> {
   bool get _isPassphrase => _type == VaultEntry.passphraseType;
 
   void _syncWords() {
-    final int target = _wordCount.round().clamp(1, 32);
+    final int target = _wordCount.round().clamp(
+        PasswordGenerator.minWords, PasswordGenerator.maxWords);
     while (_words.length < target) {
       _words.add(TextEditingController());
     }
@@ -292,9 +293,9 @@ class _EntryEditorState extends State<EntryEditor> {
                 Expanded(
                   child: Slider(
                     value: _wordCount,
-                    min: 1,
-                    max: 32,
-                    divisions: 31,
+                    min: PasswordGenerator.minWords.toDouble(),
+                    max: PasswordGenerator.maxWords.toDouble(),
+                    divisions: PasswordGenerator.maxWords - PasswordGenerator.minWords,
                     label: '${_wordCount.round()}',
                     onChanged: (double value) {
                       setState(() {

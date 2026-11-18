@@ -78,35 +78,44 @@ class _HomeShellState extends State<HomeShell> {
 
     return Scaffold(
       extendBody: true,
-      body: PageView(
-        controller: _pages,
-        onPageChanged: (int index) => setState(() => _tab = index),
-        physics: const BouncingScrollPhysics(),
-        children: <Widget>[
-          AnimatedBuilder(
-            animation: VaultStore.instance,
-            builder: (BuildContext context, Widget? child) => CodesTab(
-              onAdd: _add,
-              onLock: VaultStore.instance.lock,
+      body: SafeArea(
+        // The tabs draw their own bottom spacing (the nav bar floats over the
+        // list), but the top must respect the status bar / notch.
+        bottom: false,
+        child: PageView(
+          controller: _pages,
+          onPageChanged: (int index) => setState(() => _tab = index),
+          physics: const BouncingScrollPhysics(),
+          children: <Widget>[
+            AnimatedBuilder(
+              animation: VaultStore.instance,
+              builder: (BuildContext context, Widget? child) => CodesTab(
+                onAdd: _add,
+                onLock: VaultStore.instance.lock,
+              ),
             ),
-          ),
-          AnimatedBuilder(
-            animation: VaultStore.instance,
-            builder: (BuildContext context, Widget? child) => VaultTab(
-              segment: _vaultSegment,
-              onSegmentChanged: (int value) => setState(() => _vaultSegment = value),
+            AnimatedBuilder(
+              animation: VaultStore.instance,
+              builder: (BuildContext context, Widget? child) => VaultTab(
+                segment: _vaultSegment,
+                onSegmentChanged: (int value) =>
+                    setState(() => _vaultSegment = value),
+              ),
             ),
-          ),
-          const SettingsTab(),
-        ],
+            const SettingsTab(),
+          ],
+        ),
       ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(bottom: 4),
+        child: FloatingActionButton(
         onPressed: _add,
         elevation: 1,
         backgroundColor: dark ? LemonPalette.nightCitrus : LemonPalette.citrus,
         foregroundColor: dark ? LemonPalette.ink : Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         child: const Icon(Icons.add_rounded, size: 28),
+        ),
       ),
       bottomNavigationBar: _LemonNav(
         index: _tab,
@@ -143,7 +152,7 @@ class _LemonNav extends StatelessWidget {
         child: Container(
           padding: EdgeInsets.only(
             top: 8,
-            bottom: 8 + MediaQuery.of(context).padding.bottom * 0.4,
+            bottom: 6 + MediaQuery.viewPaddingOf(context).bottom,
           ),
           decoration: BoxDecoration(
             color: background.withValues(alpha: dark ? 0.86 : 0.92),

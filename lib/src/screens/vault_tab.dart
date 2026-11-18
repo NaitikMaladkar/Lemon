@@ -84,7 +84,7 @@ class VaultTab extends StatelessWidget {
                       'with AES-256-GCM and never leaves the device.',
                 )
               : ListView.separated(
-                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 120),
+                  padding: EdgeInsets.fromLTRB(16, 12, 16, 132 + MediaQuery.viewPaddingOf(context).bottom),
                   itemCount: items.length,
                   separatorBuilder: (_, __) => const SizedBox(height: 12),
                   itemBuilder: (BuildContext context, int index) {

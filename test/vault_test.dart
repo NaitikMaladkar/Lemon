@@ -111,7 +111,10 @@ void main() {
       expect(words.length, 12);
       expect(words.toSet().length, greaterThan(9));
       expect(PasswordGenerator.passphrase(1).length, 1);
-      expect(PasswordGenerator.passphrase(64).length, 32);
+      // The cap is 64 words; anything larger is clamped down to it.
+      expect(PasswordGenerator.passphrase(64).length, 64);
+      expect(PasswordGenerator.passphrase(200).length,
+          PasswordGenerator.maxWords);
     });
   });
 

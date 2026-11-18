@@ -44,7 +44,7 @@ jobs:
           # x86_64 is emulator-only and would add ~24 MB.
           flutter build apk --release \
             --target-platform android-arm,android-arm64 \
-            --build-name=1.0.0 \
+            --build-name=1.2.0 \
             --build-number=${{ github.run_number }}
 
       - name: Name the APK after the tag

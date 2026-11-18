@@ -141,6 +141,10 @@ class HeaderAction extends StatelessWidget {
   final VoidCallback onTap;
   final String? tooltip;
 
+  /// Draw the "+" with strokes so it renders even if the icon font subset
+  /// omits the glyph (which showed up as an empty square in the header).
+  bool get _paintPlus => icon == Icons.add_rounded || icon == Icons.add;
+
   @override
   Widget build(BuildContext context) {
     final bool dark = Theme.of(context).brightness == Brightness.dark;
@@ -155,15 +159,42 @@ class HeaderAction extends StatelessWidget {
           child: SizedBox(
             width: 42,
             height: 42,
-            child: Icon(
-              icon,
-              size: 20,
-              color: dark ? LemonPalette.nightInk : Colors.white,
-            ),
+            child: _paintPlus
+                ? CustomPaint(
+                    painter: _PlusPainter(
+                      color: dark ? LemonPalette.nightInk : Colors.white,
+                    ),
+                  )
+                : Icon(
+                    icon,
+                    size: 20,
+                    color: dark ? LemonPalette.nightInk : Colors.white,
+                  ),
           ),
         ),
       ),
     );
     return tooltip == null ? button : Tooltip(message: tooltip!, child: button);
   }
+}
+
+class _PlusPainter extends CustomPainter {
+  const _PlusPainter({required this.color});
+
+  final Color color;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final Paint paint = Paint()
+      ..color = color
+      ..strokeWidth = 2.2
+      ..strokeCap = StrokeCap.round;
+    final Offset c = size.center(Offset.zero);
+    const double arm = 7.5;
+    canvas.drawLine(c.translate(-arm, 0), c.translate(arm, 0), paint);
+    canvas.drawLine(c.translate(0, -arm), c.translate(0, arm), paint);
+  }
+
+  @override
+  bool shouldRepaint(_PlusPainter oldDelegate) => oldDelegate.color != color;
 }

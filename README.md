@@ -14,7 +14,7 @@ Windows** from one codebase (Linux builds from source).
 | --- | --- |
 | 🍋 **Live TOTP codes** | The countdown is a mini circular lemon cut into one slice per second. Each slice is eaten as its second passes, the lemon is gone at 30 s and a fresh one grows for the next window. Tap a card to copy, or use the copy / edit / delete buttons right beside the lemon. |
 | 🔑 **Password manager** | Passwords and passphrases in two sections, tap-to-copy, reveal, edit and delete. Passphrases expand into numbered words. |
-| 🎲 **Generators** | One tap for a 32-character password (every character class guaranteed) or a 1–32 word passphrase from a built-in dictionary. |
+| 🎲 **Generators** | One tap for a 32-character password (every character class guaranteed) or a 1–64 word passphrase from a built-in dictionary. |
 | 📷 **QR scanning** | Camera scans inside a framed grid — everything outside the square is a translucent theme-coloured mask. Only the square is decoded. |
 | 🔒 **PIN lock + decoy** | Exactly 4 digits. The correct PIN opens the real vault; **any other PIN opens a decoy vault** with plausible fake data. |
 | 🛡️ **Encrypted** | Vault is AES-256-GCM; the key comes from your PIN via PBKDF2-HMAC-SHA256 (120k rounds, random salt). |
@@ -49,7 +49,7 @@ cutting.
 
 ```bash
 flutter pub get
-flutter test          # 19 unit + widget tests
+flutter test          # 30 unit + widget tests
 flutter analyze
 
 flutter build apk --release       # Android

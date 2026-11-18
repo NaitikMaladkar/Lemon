@@ -71,7 +71,7 @@ class _CodesTabState extends State<CodesTab> {
                   body: 'Tap + to scan a QR code or type a secret key by hand.',
                 )
               : ListView.separated(
-                  padding: const EdgeInsets.fromLTRB(16, 10, 16, 120),
+                  padding: EdgeInsets.fromLTRB(16, 10, 16, 132 + MediaQuery.viewPaddingOf(context).bottom),
                   itemCount: items.length,
                   separatorBuilder: (_, __) => const SizedBox(height: 12),
                   itemBuilder: (BuildContext context, int index) {

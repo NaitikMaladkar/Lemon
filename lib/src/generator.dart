@@ -30,8 +30,12 @@ class PasswordGenerator {
     return chars.join();
   }
 
+  /// Hard limits for the passphrase generator.
+  static const int minWords = 1;
+  static const int maxWords = 64;
+
   static List<String> passphrase(int words, {bool capitalize = false}) {
-    final int count = words.clamp(1, 32);
+    final int count = words.clamp(minWords, maxWords);
     final List<String> out = <String>[];
     String? previous;
     while (out.length < count) {

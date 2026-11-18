@@ -13,11 +13,15 @@ class PinEntry extends StatefulWidget {
     required this.onComplete,
     this.length = 4,
     this.enabled = true,
+    this.hint = 'Enter your 4-digit PIN',
   });
 
   final Future<String?> Function(String pin) onComplete;
   final int length;
   final bool enabled;
+
+  /// Idle helper line under the dots.
+  final String hint;
 
   @override
   State<PinEntry> createState() => _PinEntryState();
@@ -110,6 +114,25 @@ class _PinEntryState extends State<PinEntry> with TickerProviderStateMixin {
     final bool dark = Theme.of(context).brightness == Brightness.dark;
     final Color soft = dark ? LemonPalette.nightInkSoft : LemonPalette.inkSoft;
 
+    // Size the keypad from the space that is actually available: three keys
+    // per row, four rows, plus dots and the hint line. On a short screen the
+    // keys shrink instead of pushing the bottom row off the display.
+    final Size screen = MediaQuery.sizeOf(context);
+    final double usableH =
+        MediaQuery.sizeOf(context).height - MediaQuery.viewPaddingOf(context).vertical;
+    // 4 rows (~0.86 * key) + dots + hint + paddings, as a rough budget.
+    final double fromHeight = (usableH - 210) / 4.2;
+    // 3 keys + 6 * 5 px horizontal padding per key, and 32 px of page margin.
+    final double fromWidth = (screen.width - 32 - 30) / 3.0;
+    final double keyH = (fromHeight < fromWidth ? fromHeight : fromWidth)
+        .clamp(46.0, 68.0)
+        .toDouble();
+    // Never wider than a third of the padded row, whatever the height allows.
+    final double keyW = (keyH * 1.32)
+        .clamp(56.0, 94.0)
+        .clamp(0.0, (screen.width - 32 - 30) / 3.0)
+        .toDouble();
+
     return Focus(
       focusNode: _focus,
       autofocus: true,
@@ -136,7 +159,7 @@ class _PinEntryState extends State<PinEntry> with TickerProviderStateMixin {
               ),
             ),
             SizedBox(
-              height: 46,
+              height: keyH < 56 ? 38 : 44,
               child: Center(
                 child: AnimatedSwitcher(
                   duration: const Duration(milliseconds: 180),
@@ -162,18 +185,21 @@ class _PinEntryState extends State<PinEntry> with TickerProviderStateMixin {
                               ),
                             )
                           : Text(
-                              'Enter your 4-digit PIN',
+                              widget.hint,
                               key: const ValueKey<String>('hint'),
+                              textAlign: TextAlign.center,
                               style: TextStyle(color: soft, fontSize: 13),
                             ),
                 ),
               ),
             ),
-            const SizedBox(height: 6),
+            const SizedBox(height: 4),
             _Keypad(
               enabled: widget.enabled && !_busy,
               onDigit: _press,
               onBackspace: _backspace,
+              keyWidth: keyW,
+              keyHeight: keyH,
             ),
           ],
         ),
@@ -239,48 +265,61 @@ class _Keypad extends StatelessWidget {
     required this.onDigit,
     required this.onBackspace,
     required this.enabled,
+    required this.keyWidth,
+    required this.keyHeight,
   });
 
   final ValueChanged<int> onDigit;
   final VoidCallback onBackspace;
   final bool enabled;
+  final double keyWidth;
+  final double keyHeight;
 
   @override
   Widget build(BuildContext context) {
+    const List<List<String>> rows = <List<String>>[
+      <String>['1', '2', '3'],
+      <String>['4', '5', '6'],
+      <String>['7', '8', '9'],
+      <String>['', '0', 'del'],
+    ];
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
-        for (final List<String> row in <List<String>>[
-          <String>['1', '2', '3'],
-          <String>['4', '5', '6'],
-          <String>['7', '8', '9'],
-          <String>['', '0', 'del'],
-        ])
+        for (final List<String> row in rows)
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 6),
+            padding: EdgeInsets.symmetric(vertical: keyHeight < 58 ? 3 : 5),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
               children: row.map((String value) {
                 if (value.isEmpty) {
-                  return const SizedBox(width: 88, height: 66);
+                  return SizedBox(width: keyWidth, height: keyHeight);
                 }
                 if (value == 'del') {
                   return _KeyButton(
-                    width: 88,
-                    height: 66,
+                    width: keyWidth,
+                    height: keyHeight,
                     enabled: enabled,
                     onTap: onBackspace,
-                    child: const Icon(Icons.backspace_outlined, size: 22),
+                    child: Icon(
+                      Icons.backspace_outlined,
+                      size: keyHeight * 0.34,
+                    ),
                   );
                 }
                 return _KeyButton(
-                  width: 88,
-                  height: 66,
+                  width: keyWidth,
+                  height: keyHeight,
                   enabled: enabled,
                   onTap: () => onDigit(int.parse(value)),
                   child: Text(
                     value,
-                    style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w700),
+                    style: TextStyle(
+                      fontSize: keyHeight * 0.40,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 );
               }).toList(),
@@ -320,7 +359,7 @@ class _KeyButtonState extends State<_KeyButton> {
     final Color line = dark ? LemonPalette.nightLine : LemonPalette.line;
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 5),
       child: GestureDetector(
         onTapDown: widget.enabled ? (_) => setState(() => _down = true) : null,
         onTapCancel: () => setState(() => _down = false),
@@ -343,7 +382,7 @@ class _KeyButtonState extends State<_KeyButton> {
               color: _down
                   ? LemonPalette.citrus.withValues(alpha: dark ? 0.30 : 0.20)
                   : base,
-              borderRadius: BorderRadius.circular(22),
+              borderRadius: BorderRadius.circular(widget.height * 0.33),
               border: Border.all(color: _down ? LemonPalette.citrus : line),
               boxShadow: _down
                   ? null

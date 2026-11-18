@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import '../vault_store.dart';
 import '../widgets/pin_entry.dart';
 import '../widgets/pin_scaffold.dart';
-import '../theme.dart';
 
 /// First run: pick a 4-digit PIN, then confirm it. Everything is encrypted with
 /// a key derived from that PIN.
@@ -19,24 +18,17 @@ class _SetupScreenState extends State<SetupScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final bool dark = Theme.of(context).brightness == Brightness.dark;
     final bool confirming = _first != null;
 
     return PinScaffold(
       title: confirming ? 'Confirm your PIN' : 'Create your PIN',
       subtitle: confirming
           ? 'Type the same four digits once more.'
-          : 'Lemon keeps everything encrypted with this PIN. There is no account '
-              'and nothing ever leaves your device.',
-      footer: Text(
-        'Any other PIN later opens a decoy vault instead.',
-        style: TextStyle(
-          fontSize: 11.5,
-          letterSpacing: 0.3,
-          color: dark ? LemonPalette.nightInkSoft : LemonPalette.inkSoft,
-        ),
-      ),
+          : 'Lemon encrypts everything with this PIN. Nothing ever leaves your '
+              'device.',
+      footer: 'Any other PIN later opens a decoy vault instead.',
       child: PinEntry(
+        hint: confirming ? 'Repeat the four digits' : 'Choose a 4-digit PIN',
         onComplete: (String pin) async {
           if (_first == null) {
             setState(() => _first = pin);
