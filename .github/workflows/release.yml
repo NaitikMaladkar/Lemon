@@ -116,7 +116,8 @@ jobs:
           UninstallDisplayIcon={app}\lemon.exe
           Compression=lzma2/max
           SolidCompression=yes
-          WizardStyle=compact
+          WizardStyle=modern
+          DisableProgramGroupPage=yes
           ArchitecturesInstallIn64BitMode=x64compatible
 
           [Files]
