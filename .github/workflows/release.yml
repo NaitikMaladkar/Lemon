@@ -57,7 +57,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: out/Lemon-${{ github.ref_name }}.apk
-          overwrite: true
+          overwrite_files: true
           fail_on_unmatched_files: true
           name: Lemon ${{ github.ref_name }}
           body: |
@@ -142,7 +142,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: out/Lemon-${{ github.ref_name }}-setup.exe
-          overwrite: true
+          overwrite_files: true
           fail_on_unmatched_files: true
 
       - name: Fallback - publish portable zip
@@ -160,5 +160,5 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: out/Lemon-${{ github.ref_name }}-windows.zip
-          overwrite: true
+          overwrite_files: true
           fail_on_unmatched_files: true
